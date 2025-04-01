@@ -1668,8 +1668,7 @@ spec:
             - --maxAPICallResponseLength=2000000
             - --loggingFormat=text
             - --v=2
-            - --enablePolicyException=true
-            - --exceptionNamespace=*
+            - --enablePolicyException=false
             - --protectManagedResources=false
             - --allowInsecureRegistry=false
             - --registryCredentialHelpers=default,google,amazon,azure,github
@@ -1829,8 +1828,7 @@ spec:
             - --maxAPICallResponseLength=2000000
             - --loggingFormat=text
             - --v=2
-            - --enablePolicyException=true
-            - --exceptionNamespace=*
+            - --enablePolicyException=false
             - --enableReporting=validate,mutate,mutateExisting,imageVerify,generate
             
           env:
@@ -2093,8 +2091,7 @@ spec:
             - --maxAPICallResponseLength=2000000
             - --loggingFormat=text
             - --v=2
-            - --enablePolicyException=true
-            - --exceptionNamespace=*
+            - --enablePolicyException=false
             - --allowInsecureRegistry=false
             - --registryCredentialHelpers=default,google,amazon,azure,github
             - --enableReporting=validate,mutate,mutateExisting,imageVerify,generate
