@@ -19,6 +19,15 @@ spec:
       - group: ""
         version: "v1"
         kind: "Pod"
+      - group: "apps"
+        version: "v1"
+        kind: "StatefulSet"
+      - group: "apps"
+        version: "v1"
+        kind: "DaemonSet"
+      - group: ""
+        version: "v1"
+        kind: "Service"
   match:
     - excludedNamespaces: ["kube-system", "gatekeeper-system"]
       processes: ["*"]
