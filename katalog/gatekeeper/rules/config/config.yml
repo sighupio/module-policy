@@ -31,9 +31,6 @@ spec:
       - group: "batch"
         version: "v1"
         kind: "CronJob"
-      - group: ""
-        version: "v1"
-        kind: "Service"
   match:
     - excludedNamespaces: ["kube-system", "gatekeeper-system"]
       processes: ["*"]
