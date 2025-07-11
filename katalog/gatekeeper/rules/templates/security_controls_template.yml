@@ -53,6 +53,12 @@ spec:
           is_deployment {
                   kind = "Deployment"
           }
+          is_daemonset {
+                  kind = "DaemonSet"
+          }
+          is_statefulset {
+                  kind = "StatefulSet"
+          }
           is_pod {
                   kind = "Pod"
           }
@@ -77,6 +83,14 @@ spec:
           }
           pods[pod] {
                   is_deployment
+                  pod = object.spec.template
+          }
+          pods[pod] {
+                  is_statefulset
+                  pod = object.spec.template
+          }
+          pods[pod] {
+                  is_daemonset
                   pod = object.spec.template
           }
           pods[pod] {
