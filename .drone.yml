@@ -278,7 +278,6 @@ type: docker
 
 depends_on:
   - Linting
-  - E2E Tests Kubernetes v1.29.8
 
 clone:
   depth: 1
@@ -454,7 +453,6 @@ type: docker
 
 depends_on:
   - Linting
-  - E2E Tests Kubernetes v1.30.4
 
 clone:
   depth: 1
@@ -630,7 +628,6 @@ type: docker
 
 depends_on:
   - Linting
-  - E2E Tests Kubernetes v1.31.0
 
 clone:
   depth: 1
@@ -806,7 +803,6 @@ type: docker
 
 depends_on:
   - Linting
-  - E2E Tests Kubernetes v1.32.2
 
 clone:
   depth: 1
