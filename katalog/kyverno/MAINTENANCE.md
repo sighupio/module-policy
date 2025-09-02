@@ -30,3 +30,4 @@ What was changed:
 - Removed all the helm hooks from the deploy
 - Manually added policies to have a similar ruleset as gatekeeper
 - Whitelisted all the `infra` fury namespaces in the `MAINTENANCE.values.yaml` variable file
+- Keep the Validating Admission Policy set to false

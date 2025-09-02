@@ -26,30 +26,21 @@ set -o pipefail
     kubectl apply -f https://raw.githubusercontent.com/sighupio/fury-kubernetes-monitoring/refs/tags/v3.3.1/katalog/prometheus-operator/crds/0prometheusruleCustomResourceDefinition.yaml
     force_apply katalog/gatekeeper/core
   }
-  loop_it deploy 30 2
+  run deploy
   [[ "$status" -eq 0 ]]
 }
 
 @test "Wait for Gatekeeper Audit" {
   info
-  test(){
-    readyReplicas=$(kubectl get deploy gatekeeper-audit -n gatekeeper-system -o jsonpath="{.status.readyReplicas}")
-    if [ "${readyReplicas}" != "1" ]; then return 1; fi
-  }
-  loop_it test 30 2
-  status=${loop_it_result}
+  # Wait for the Deployment rollout to complete
+  run kubectl rollout status deployment/gatekeeper-audit -n gatekeeper-system --timeout=10m
   [[ "$status" -eq 0 ]]
 }
 
-
 @test "Wait for Gatekeeper Core" {
   info
-  test(){
-    readyReplicas=$(kubectl get deploy gatekeeper-controller-manager -n gatekeeper-system -o jsonpath="{.status.readyReplicas}")
-    if [ "${readyReplicas}" != "3" ]; then return 1; fi
-  }
-  loop_it test 30 2
-  status=${loop_it_result}
+  # Wait for the controller-manager Deployment to become ready (3 replicas)
+  run kubectl rollout status deployment/gatekeeper-controller-manager -n gatekeeper-system --timeout=10m
   [[ "$status" -eq 0 ]]
 }
 
@@ -64,8 +55,7 @@ set -o pipefail
   deploy() {
     kaction katalog/gatekeeper/monitoring apply
   }
-  loop_it deploy 30 10
-  status=${loop_it_result}
+  run deploy
   [[ "$status" -eq 0 ]]
 }
 
@@ -74,25 +64,39 @@ set -o pipefail
   deploy() {
     kaction katalog/gatekeeper/rules/templates apply
   }
-  loop_it deploy 30 10
-  status=${loop_it_result}
+  run deploy
   [[ "$status" -eq 0 ]]
+}
+
+@test "Wait for CRDs" {
+  info
+  # Wait until CRDs exist, then wait for Established
+  wait_crd() {
+    local crd_name="$1"
+    # Wait for CRD to be created (avoid kubectl wait failing on non-existing CRD)
+    loop_it "kubectl get crd ${crd_name}" 200 3
+    [ "$?" -eq 0 ]
+    # Once present, wait for Established condition
+    run kubectl wait --for=condition=Established "crd/${crd_name}" --timeout=10m
+    [[ "$status" -eq 0 ]]
+  }
+
+  wait_crd securitycontrols.constraints.gatekeeper.sh
+  wait_crd k8suniqueingresshost.constraints.gatekeeper.sh
+  wait_crd k8suniqueserviceselector.constraints.gatekeeper.sh
+  wait_crd k8slivenessprobe.constraints.gatekeeper.sh
+  wait_crd k8sreadinessprobe.constraints.gatekeeper.sh
+  wait_crd k8sprotectednamespace.constraints.gatekeeper.sh
 }
 
 @test "Deploy Gatekeeper Rules - constraints" {
   info
-  sleep 30
   deploy() {
-    # enabling all constraints for testing purposes
-    sed -i -e 's/---//g' katalog/gatekeeper/rules/constraints/kustomization.yaml
-    cd  katalog/gatekeeper/rules/constraints &&\
-    kustomize edit add resource must_have_namespace_label_to_be_safely_deleted.yml;\
-    cd -
     kaction katalog/gatekeeper/rules/constraints apply
-
+    # Explicitly apply namespace protection constraint used in tests
+    kubectl apply -f katalog/gatekeeper/rules/constraints/must_have_namespace_label_to_be_safely_deleted.yml
   }
-  loop_it deploy 30 10
-  status=${loop_it_result}
+  run deploy
   [[ "$status" -eq 0 ]]
 }
 
@@ -101,8 +105,7 @@ set -o pipefail
   deploy() {
     kaction katalog/gatekeeper/rules/config apply
   }
-  loop_it deploy 30 10
-  status=${loop_it_result}
+  run deploy
   [[ "$status" -eq 0 ]]
 }
 
@@ -111,8 +114,7 @@ set -o pipefail
   deploy() {
     kubectl apply -f katalog/tests/gatekeeper-manifests/mutation.yaml
   }
-  loop_it deploy 30 10
-  status=${loop_it_result}
+  run deploy
   [[ "$status" -eq 0 ]]
 }
 
@@ -121,25 +123,14 @@ set -o pipefail
   deploy() {
     kaction katalog/gatekeeper/gpm apply
   }
-  loop_it deploy 30 10
-  status=${loop_it_result}
+  run deploy
   [[ "$status" -eq 0 ]]
 }
 
 @test "Wait for Gatekeeper Policy Manager" {
   info
-  test(){
-    readyReplicas=$(kubectl get deploy gatekeeper-policy-manager -n gatekeeper-system -o jsonpath="{.status.readyReplicas}")
-    if [ "${readyReplicas}" != "1" ]; then return 1; fi
-  }
-  loop_it test 30 2
-  status=${loop_it_result}
+  run kubectl rollout status deployment/gatekeeper-policy-manager -n gatekeeper-system --timeout=10m
   [[ "$status" -eq 0 ]]
-}
-
-@test "Wait for Gatekeeper to process all the constraints to test all rules" {
-  info
-  sleep 120
 }
 
 # [ALLOW] Allowed by Gatekeeper Kubernetes requests
@@ -259,9 +250,10 @@ set -o pipefail
 
 @test "[AUDIT] check violations triggered by bad-pod are present" {
   info
-  run kubectl get k8slivenessprobe.constraints.gatekeeper.sh liveness-probe -o go-template="{{.status.totalViolations}}"
-  echo "number of violations for liveness-probe constraint is: ${output}"
-  echo "command status is: ${status}"
+  # Wait for audit to report expected violations without arbitrary sleep
+  run kubectl wait \
+    --for=jsonpath='{.status.totalViolations}'=3 \
+    k8slivenessprobe.constraints.gatekeeper.sh/liveness-probe \
+    --timeout=10m
   [[ "$status" -eq 0 ]]
-  [[ "$output" -eq 3 ]]
 }
