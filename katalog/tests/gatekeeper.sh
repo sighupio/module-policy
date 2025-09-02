@@ -66,6 +66,19 @@ set -o pipefail
   }
   run deploy
   [[ "$status" -eq 0 ]]
+  # Wait for ConstraintTemplate-derived CRDs to be established
+  run kubectl wait --for=condition=Established crd/securitycontrols.constraints.gatekeeper.sh --timeout=10m
+  [[ "$status" -eq 0 ]]
+  run kubectl wait --for=condition=Established crd/k8suniqueingresshosts.constraints.gatekeeper.sh --timeout=10m
+  [[ "$status" -eq 0 ]]
+  run kubectl wait --for=condition=Established crd/k8suniqueserviceselectors.constraints.gatekeeper.sh --timeout=10m
+  [[ "$status" -eq 0 ]]
+  run kubectl wait --for=condition=Established crd/k8slivenessprobes.constraints.gatekeeper.sh --timeout=10m
+  [[ "$status" -eq 0 ]]
+  run kubectl wait --for=condition=Established crd/k8sreadinessprobes.constraints.gatekeeper.sh --timeout=10m
+  [[ "$status" -eq 0 ]]
+  run kubectl wait --for=condition=Established crd/k8sprotectednamespaces.constraints.gatekeeper.sh --timeout=10m
+  [[ "$status" -eq 0 ]]
 }
 
 @test "Deploy Gatekeeper Rules - constraints" {
