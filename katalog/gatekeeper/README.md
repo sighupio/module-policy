@@ -24,7 +24,7 @@ This module can easily be added to your existing Fury setup adding to your `Fury
 bases:
   (...)
   - name: opa/gatekeeper
-    version: "v1.14.0"
+    version: "vx.x.0"
 ```
 
 Once you'll do this, you can then proceed to integrate Gatekeeper into your Kustomize project.
