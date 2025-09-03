@@ -9,7 +9,7 @@
 </h1>
 <!-- markdownlint-enable MD033 -->
 
-![Release](https://img.shields.io/badge/Latest%20Release-vx.x.x-blue)
+![Release](https://img.shields.io/badge/Latest%20Release-v1.15.0-blue)
 ![License](https://img.shields.io/github/license/sighupio/module-policy?label=License)
 ![Slack](https://img.shields.io/badge/slack-@kubernetes/fury-yellow.svg?logo=slack&label=Slack)
 
@@ -82,7 +82,7 @@ Check the [compatibility matrix][compatibility-matrix] for additional informatio
 ```yaml
 bases:
   - name: opa/gatekeeper
-    version: "x.x.x"
+    version: "1.15.0"
 ```
 
 > See `furyctl` [documentation][furyctl-repo] for additional details about `Furyfile.yml` format.
@@ -196,7 +196,7 @@ Notice that the alert for when the Gatekeeper webhook is in `Ignore` mode (the d
 ```yaml
 bases:
   - name: opa/kyverno
-    version: "x.x.x"
+    version: "1.15.0"
 ```
 
 > See `furyctl` [documentation][furyctl-repo] for additional details about `Furyfile.yml` format.

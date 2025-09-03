@@ -24,7 +24,7 @@ description = "Validate all manifests can be built"
 run = '''
 echo "🔍 Validating manifest builds..."
 kustomize build katalog/gatekeeper > /dev/null && echo "  ✅ gatekeeper"
-kustomize build katalog/kyverno > /dev/null && echo "  ✅ gatekeeper"
+kustomize build katalog/kyverno > /dev/null && echo "  ✅ kyverno"
 echo "✅ All manifests validated!"
 '''
 
