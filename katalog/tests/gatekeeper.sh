@@ -66,19 +66,6 @@ set -o pipefail
   }
   run deploy
   [[ "$status" -eq 0 ]]
-  # Wait for ConstraintTemplate-derived CRDs to be established
-  run kubectl wait --for=condition=Established crd/securitycontrols.constraints.gatekeeper.sh --timeout=10m
-  [[ "$status" -eq 0 ]]
-  run kubectl wait --for=condition=Established crd/k8suniqueingresshosts.constraints.gatekeeper.sh --timeout=10m
-  [[ "$status" -eq 0 ]]
-  run kubectl wait --for=condition=Established crd/k8suniqueserviceselectors.constraints.gatekeeper.sh --timeout=10m
-  [[ "$status" -eq 0 ]]
-  run kubectl wait --for=condition=Established crd/k8slivenessprobes.constraints.gatekeeper.sh --timeout=10m
-  [[ "$status" -eq 0 ]]
-  run kubectl wait --for=condition=Established crd/k8sreadinessprobes.constraints.gatekeeper.sh --timeout=10m
-  [[ "$status" -eq 0 ]]
-  run kubectl wait --for=condition=Established crd/k8sprotectednamespaces.constraints.gatekeeper.sh --timeout=10m
-  [[ "$status" -eq 0 ]]
 }
 
 @test "Deploy Gatekeeper Rules - constraints" {
@@ -103,6 +90,27 @@ set -o pipefail
   }
   run deploy
   [[ "$status" -eq 0 ]]
+}
+
+@test "Wait for CRDs" {
+  info
+  # Wait until CRDs exist, then wait for Established
+  wait_crd() {
+    local crd_name="$1"
+    # Wait for CRD to be created (avoid kubectl wait failing on non-existing CRD)
+    loop_it "kubectl get crd ${crd_name}" 200 3
+    [ "$?" -eq 0 ]
+    # Once present, wait for Established condition
+    run kubectl wait --for=condition=Established "crd/${crd_name}" --timeout=10m
+    [[ "$status" -eq 0 ]]
+  }
+
+  wait_crd securitycontrols.constraints.gatekeeper.sh
+  wait_crd k8suniqueingresshost.constraints.gatekeeper.sh
+  wait_crd k8suniqueserviceselector.constraints.gatekeeper.sh
+  wait_crd k8slivenessprobe.constraints.gatekeeper.sh
+  wait_crd k8sreadinessprobe.constraints.gatekeeper.sh
+  wait_crd k8sprotectednamespace.constraints.gatekeeper.sh
 }
 
 @test "Deploy Gatekeeper Mutator" {
