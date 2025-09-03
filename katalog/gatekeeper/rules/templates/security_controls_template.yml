@@ -53,6 +53,18 @@ spec:
           is_deployment {
                   kind = "Deployment"
           }
+          is_daemonset {
+                  kind = "DaemonSet"
+          }
+          is_job {
+                  kind = "Job"
+          }
+          is_cronjob {
+                  kind = "CronJob"
+          }
+          is_statefulset {
+                  kind = "StatefulSet"
+          }
           is_pod {
                   kind = "Pod"
           }
@@ -78,6 +90,22 @@ spec:
           pods[pod] {
                   is_deployment
                   pod = object.spec.template
+          }
+          pods[pod] {
+                  is_statefulset
+                  pod = object.spec.template
+          }
+          pods[pod] {
+                  is_daemonset
+                  pod = object.spec.template
+          }
+          pods[pod] {
+                  is_job
+                  pod = object.spec.template
+          }
+          pods[pod] {
+                  is_cronjob
+                  pod = object.spec.jobTemplate.spec.template
           }
           pods[pod] {
                   is_pod

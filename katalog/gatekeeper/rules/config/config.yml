@@ -19,6 +19,18 @@ spec:
       - group: ""
         version: "v1"
         kind: "Pod"
+      - group: "apps"
+        version: "v1"
+        kind: "StatefulSet"
+      - group: "apps"
+        version: "v1"
+        kind: "DaemonSet"
+      - group: "batch"
+        version: "v1"
+        kind: "Job"
+      - group: "batch"
+        version: "v1"
+        kind: "CronJob"
   match:
     - excludedNamespaces: ["kube-system", "gatekeeper-system"]
       processes: ["*"]
