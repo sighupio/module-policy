@@ -68,44 +68,6 @@ set -o pipefail
   [[ "$status" -eq 0 ]]
 }
 
-@test "Deploy Gatekeeper Rules - constraints" {
-  info
-  deploy() {
-    # enabling all constraints for testing purposes
-    sed -i -e 's/---//g' katalog/gatekeeper/rules/constraints/kustomization.yaml
-    cd  katalog/gatekeeper/rules/constraints &&\
-    kustomize edit add resource must_have_namespace_label_to_be_safely_deleted.yml;\
-    cd -
-    # Wait for Gatekeeper to generate CRDs from the ConstraintTemplates
-    # This avoids a race where constraints are applied before the CRDs exist.
-    loop_it "kubectl get crd securitycontrols.constraints.gatekeeper.sh" 200 3 || return 1
-    loop_it "kubectl get crd k8suniqueingresshost.constraints.gatekeeper.sh" 200 3 || return 1
-    loop_it "kubectl get crd k8suniqueserviceselector.constraints.gatekeeper.sh" 200 3 || return 1
-    loop_it "kubectl get crd k8slivenessprobe.constraints.gatekeeper.sh" 200 3 || return 1
-    loop_it "kubectl get crd k8sreadinessprobe.constraints.gatekeeper.sh" 200 3 || return 1
-    loop_it "kubectl get crd k8sprotectednamespace.constraints.gatekeeper.sh" 200 3 || return 1
-    kubectl wait --for=condition=Established crd/securitycontrols.constraints.gatekeeper.sh --timeout=10m
-    kubectl wait --for=condition=Established crd/k8suniqueingresshost.constraints.gatekeeper.sh --timeout=10m
-    kubectl wait --for=condition=Established crd/k8suniqueserviceselector.constraints.gatekeeper.sh --timeout=10m
-    kubectl wait --for=condition=Established crd/k8slivenessprobe.constraints.gatekeeper.sh --timeout=10m
-    kubectl wait --for=condition=Established crd/k8sreadinessprobe.constraints.gatekeeper.sh --timeout=10m
-    kubectl wait --for=condition=Established crd/k8sprotectednamespace.constraints.gatekeeper.sh --timeout=10m
-    kaction katalog/gatekeeper/rules/constraints apply
-
-  }
-  run deploy
-  [[ "$status" -eq 0 ]]
-}
-
-@test "Deploy Gatekeeper Rules - config" {
-  info
-  deploy() {
-    kaction katalog/gatekeeper/rules/config apply
-  }
-  run deploy
-  [[ "$status" -eq 0 ]]
-}
-
 @test "Wait for CRDs" {
   info
   # Wait until CRDs exist, then wait for Established
@@ -125,6 +87,26 @@ set -o pipefail
   wait_crd k8slivenessprobe.constraints.gatekeeper.sh
   wait_crd k8sreadinessprobe.constraints.gatekeeper.sh
   wait_crd k8sprotectednamespace.constraints.gatekeeper.sh
+}
+
+@test "Deploy Gatekeeper Rules - constraints" {
+  info
+  deploy() {
+    kaction katalog/gatekeeper/rules/constraints apply
+    # Explicitly apply namespace protection constraint used in tests
+    kubectl apply -f katalog/gatekeeper/rules/constraints/must_have_namespace_label_to_be_safely_deleted.yml
+  }
+  run deploy
+  [[ "$status" -eq 0 ]]
+}
+
+@test "Deploy Gatekeeper Rules - config" {
+  info
+  deploy() {
+    kaction katalog/gatekeeper/rules/config apply
+  }
+  run deploy
+  [[ "$status" -eq 0 ]]
 }
 
 @test "Deploy Gatekeeper Mutator" {
@@ -150,7 +132,6 @@ set -o pipefail
   run kubectl rollout status deployment/gatekeeper-policy-manager -n gatekeeper-system --timeout=10m
   [[ "$status" -eq 0 ]]
 }
-
 
 # [ALLOW] Allowed by Gatekeeper Kubernetes requests
 
