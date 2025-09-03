@@ -97,7 +97,7 @@ volumes:
       path: /root/mise_data_dir
 
 ---
-name: E2E Tests Kubernetes v1.29.8
+name: E2E Tests Gatekeeper Kubernetes v1.29.8
 kind: pipeline
 type: docker
 
@@ -122,8 +122,7 @@ environment:
   # Cluster names and kubeconfigs.
   GATEKEEPER_CLUSTER_NAME: "${DRONE_REPO_NAME}-${DRONE_BUILD_NUMBER}-gatekeeper-v1.29.8"
   KYVERNO_CLUSTER_NAME: "${DRONE_REPO_NAME}-${DRONE_BUILD_NUMBER}-kyverno-v1.29.8"
-  KUBECONFIG_GATEKEEPER: "/drone/src/kubeconfig-gatekeeper-v1.29.8"
-  KUBECONFIG_KYVERNO: "/drone/src/kubeconfig-kyverno-v1.29.8"
+  KUBECONFIG: "/drone/src/kubeconfig-gatekeeper-v1.29.8"
 
   # Tool versions.
   KIND_VERSION: "0.24.0"
@@ -158,7 +157,7 @@ steps:
       # does not work when disabling the default CNI. It will always go in timeout.
       - kind create cluster --name $${GATEKEEPER_CLUSTER_NAME} --image registry.sighup.io/fury/kindest/node:$${CLUSTER_VERSION} --config katalog/tests/kind/config.yml
       # save the kubeconfig so we can use it from other steps.
-      - kind get kubeconfig --name $${GATEKEEPER_CLUSTER_NAME} > $${KUBECONFIG_GATEKEEPER}
+      - kind get kubeconfig --name $${GATEKEEPER_CLUSTER_NAME} > $${KUBECONFIG}
 
   - name: Gatekeeper End-to-End Tests
     image: quay.io/sighup/mise:v2025.4.4
@@ -175,7 +174,6 @@ steps:
       - |-
         mise use bats@$${BATS_VERSION} kubectl@$${KUBECTL_VERSION} kustomize@$${KUSTOMIZE_VERSION}
         eval "$(mise activate bash --shims)"
-        export KUBECONFIG=$${KUBECONFIG_GATEKEEPER}
       # wait for Kind cluster to be ready
       - until kubectl get serviceaccount default > /dev/null 2>&1; do echo "waiting for control-plane" && sleep 1; done
       - bats -t katalog/tests/gatekeeper.sh
@@ -199,8 +197,54 @@ steps:
       status:
         - success
         - failure
+volumes:
+  - name: dockersock
+    host:
+      path: /var/run/docker.sock
+  - name: mise-cache
+    host:
+      path: /root/mise_data_dir
 
-  # kyverno cluster and e2e tests
+---
+name: E2E Tests Kyverno Kubernetes v1.29.8
+kind: pipeline
+type: docker
+
+depends_on:
+  - Linting
+
+clone:
+  depth: 1
+
+platform:
+  os: linux
+  arch: amd64
+
+environment:
+  # Mise configuration.
+  MISE_DATA_DIR: "/mise-data"
+  MISE_OVERRIDE_CONFIG_FILENAMES: "mise.ci.toml"
+
+  # Cluster version.
+  CLUSTER_VERSION: "v1.29.8"
+
+  # Cluster names and kubeconfigs.
+  GATEKEEPER_CLUSTER_NAME: "${DRONE_REPO_NAME}-${DRONE_BUILD_NUMBER}-gatekeeper-v1.29.8"
+  KYVERNO_CLUSTER_NAME: "${DRONE_REPO_NAME}-${DRONE_BUILD_NUMBER}-kyverno-v1.29.8"
+  KUBECONFIG: "/drone/src/kubeconfig-kyverno-v1.29.8"
+
+  # Tool versions.
+  KIND_VERSION: "0.24.0"
+  KUBECTL_VERSION: "v1.29.8"
+  BATS_VERSION: "1.1.0"
+  KUSTOMIZE_VERSION: "5.6.0"
+
+trigger:
+  ref:
+    include:
+      - refs/tags/**
+
+steps:
   - name: Create Kind Cluster for Kyverno
     image: quay.io/sighup/mise:v2025.4.4
     pull: always
@@ -222,7 +266,7 @@ steps:
       # does not work when disabling the default CNI. It will always go in timeout.
       - kind create cluster --name $${KYVERNO_CLUSTER_NAME} --image registry.sighup.io/fury/kindest/node:$${CLUSTER_VERSION} --config katalog/tests/kind/config.yml
       # save the kubeconfig so we can use it from other steps.
-      - kind get kubeconfig --name $${KYVERNO_CLUSTER_NAME} > $${KUBECONFIG_KYVERNO}
+      - kind get kubeconfig --name $${KYVERNO_CLUSTER_NAME} > $${KUBECONFIG}
 
   - name: Kyverno End-to-End Tests
     image: quay.io/sighup/mise:v2025.4.4
@@ -239,7 +283,6 @@ steps:
       - |-
         mise use bats@$${BATS_VERSION} kubectl@$${KUBECTL_VERSION} kustomize@$${KUSTOMIZE_VERSION}
         eval "$(mise activate bash --shims)"
-        export KUBECONFIG=$${KUBECONFIG_KYVERNO}
       # wait for Kind cluster to be ready
       - until kubectl get serviceaccount default > /dev/null 2>&1; do echo "waiting for control-plane" && sleep 1; done
       - bats -t katalog/tests/kyverno.sh
@@ -272,7 +315,7 @@ volumes:
       path: /root/mise_data_dir
 
 ---
-name: E2E Tests Kubernetes v1.30.4
+name: E2E Tests Gatekeeper Kubernetes v1.30.4
 kind: pipeline
 type: docker
 
@@ -297,8 +340,7 @@ environment:
   # Cluster names and kubeconfigs.
   GATEKEEPER_CLUSTER_NAME: "${DRONE_REPO_NAME}-${DRONE_BUILD_NUMBER}-gatekeeper-v1.30.4"
   KYVERNO_CLUSTER_NAME: "${DRONE_REPO_NAME}-${DRONE_BUILD_NUMBER}-kyverno-v1.30.4"
-  KUBECONFIG_GATEKEEPER: "/drone/src/kubeconfig-gatekeeper-v1.30.4"
-  KUBECONFIG_KYVERNO: "/drone/src/kubeconfig-kyverno-v1.30.4"
+  KUBECONFIG: "/drone/src/kubeconfig-gatekeeper-v1.30.4"
 
   # Tool versions.
   KIND_VERSION: "0.24.0"
@@ -333,7 +375,7 @@ steps:
       # does not work when disabling the default CNI. It will always go in timeout.
       - kind create cluster --name $${GATEKEEPER_CLUSTER_NAME} --image registry.sighup.io/fury/kindest/node:$${CLUSTER_VERSION} --config katalog/tests/kind/config.yml
       # save the kubeconfig so we can use it from other steps.
-      - kind get kubeconfig --name $${GATEKEEPER_CLUSTER_NAME} > $${KUBECONFIG_GATEKEEPER}
+      - kind get kubeconfig --name $${GATEKEEPER_CLUSTER_NAME} > $${KUBECONFIG}
 
   - name: Gatekeeper End-to-End Tests
     image: quay.io/sighup/mise:v2025.4.4
@@ -350,7 +392,6 @@ steps:
       - |-
         mise use bats@$${BATS_VERSION} kubectl@$${KUBECTL_VERSION} kustomize@$${KUSTOMIZE_VERSION}
         eval "$(mise activate bash --shims)"
-        export KUBECONFIG=$${KUBECONFIG_GATEKEEPER}
       # wait for Kind cluster to be ready
       - until kubectl get serviceaccount default > /dev/null 2>&1; do echo "waiting for control-plane" && sleep 1; done
       - bats -t katalog/tests/gatekeeper.sh
@@ -374,8 +415,54 @@ steps:
       status:
         - success
         - failure
+volumes:
+  - name: dockersock
+    host:
+      path: /var/run/docker.sock
+  - name: mise-cache
+    host:
+      path: /root/mise_data_dir
 
-  # kyverno cluster and e2e tests
+---
+name: E2E Tests Kyverno Kubernetes v1.30.4
+kind: pipeline
+type: docker
+
+depends_on:
+  - Linting
+
+clone:
+  depth: 1
+
+platform:
+  os: linux
+  arch: amd64
+
+environment:
+  # Mise configuration.
+  MISE_DATA_DIR: "/mise-data"
+  MISE_OVERRIDE_CONFIG_FILENAMES: "mise.ci.toml"
+
+  # Cluster version.
+  CLUSTER_VERSION: "v1.30.4"
+
+  # Cluster names and kubeconfigs.
+  GATEKEEPER_CLUSTER_NAME: "${DRONE_REPO_NAME}-${DRONE_BUILD_NUMBER}-gatekeeper-v1.30.4"
+  KYVERNO_CLUSTER_NAME: "${DRONE_REPO_NAME}-${DRONE_BUILD_NUMBER}-kyverno-v1.30.4"
+  KUBECONFIG: "/drone/src/kubeconfig-kyverno-v1.30.4"
+
+  # Tool versions.
+  KIND_VERSION: "0.24.0"
+  KUBECTL_VERSION: "v1.30.4"
+  BATS_VERSION: "1.1.0"
+  KUSTOMIZE_VERSION: "5.6.0"
+
+trigger:
+  ref:
+    include:
+      - refs/tags/**
+
+steps:
   - name: Create Kind Cluster for Kyverno
     image: quay.io/sighup/mise:v2025.4.4
     pull: always
@@ -397,7 +484,7 @@ steps:
       # does not work when disabling the default CNI. It will always go in timeout.
       - kind create cluster --name $${KYVERNO_CLUSTER_NAME} --image registry.sighup.io/fury/kindest/node:$${CLUSTER_VERSION} --config katalog/tests/kind/config.yml
       # save the kubeconfig so we can use it from other steps.
-      - kind get kubeconfig --name $${KYVERNO_CLUSTER_NAME} > $${KUBECONFIG_KYVERNO}
+      - kind get kubeconfig --name $${KYVERNO_CLUSTER_NAME} > $${KUBECONFIG}
 
   - name: Kyverno End-to-End Tests
     image: quay.io/sighup/mise:v2025.4.4
@@ -414,7 +501,6 @@ steps:
       - |-
         mise use bats@$${BATS_VERSION} kubectl@$${KUBECTL_VERSION} kustomize@$${KUSTOMIZE_VERSION}
         eval "$(mise activate bash --shims)"
-        export KUBECONFIG=$${KUBECONFIG_KYVERNO}
       # wait for Kind cluster to be ready
       - until kubectl get serviceaccount default > /dev/null 2>&1; do echo "waiting for control-plane" && sleep 1; done
       - bats -t katalog/tests/kyverno.sh
@@ -447,7 +533,7 @@ volumes:
       path: /root/mise_data_dir
 
 ---
-name: E2E Tests Kubernetes v1.31.0
+name: E2E Tests Gatekeeper Kubernetes v1.31.0
 kind: pipeline
 type: docker
 
@@ -472,8 +558,7 @@ environment:
   # Cluster names and kubeconfigs.
   GATEKEEPER_CLUSTER_NAME: "${DRONE_REPO_NAME}-${DRONE_BUILD_NUMBER}-gatekeeper-v1.31.0"
   KYVERNO_CLUSTER_NAME: "${DRONE_REPO_NAME}-${DRONE_BUILD_NUMBER}-kyverno-v1.31.0"
-  KUBECONFIG_GATEKEEPER: "/drone/src/kubeconfig-gatekeeper-v1.31.0"
-  KUBECONFIG_KYVERNO: "/drone/src/kubeconfig-kyverno-v1.31.0"
+  KUBECONFIG: "/drone/src/kubeconfig-gatekeeper-v1.31.0"
 
   # Tool versions.
   KIND_VERSION: "0.24.0"
@@ -508,7 +593,7 @@ steps:
       # does not work when disabling the default CNI. It will always go in timeout.
       - kind create cluster --name $${GATEKEEPER_CLUSTER_NAME} --image registry.sighup.io/fury/kindest/node:$${CLUSTER_VERSION} --config katalog/tests/kind/config.yml
       # save the kubeconfig so we can use it from other steps.
-      - kind get kubeconfig --name $${GATEKEEPER_CLUSTER_NAME} > $${KUBECONFIG_GATEKEEPER}
+      - kind get kubeconfig --name $${GATEKEEPER_CLUSTER_NAME} > $${KUBECONFIG}
 
   - name: Gatekeeper End-to-End Tests
     image: quay.io/sighup/mise:v2025.4.4
@@ -525,7 +610,6 @@ steps:
       - |-
         mise use bats@$${BATS_VERSION} kubectl@$${KUBECTL_VERSION} kustomize@$${KUSTOMIZE_VERSION}
         eval "$(mise activate bash --shims)"
-        export KUBECONFIG=$${KUBECONFIG_GATEKEEPER}
       # wait for Kind cluster to be ready
       - until kubectl get serviceaccount default > /dev/null 2>&1; do echo "waiting for control-plane" && sleep 1; done
       - bats -t katalog/tests/gatekeeper.sh
@@ -549,8 +633,54 @@ steps:
       status:
         - success
         - failure
+volumes:
+  - name: dockersock
+    host:
+      path: /var/run/docker.sock
+  - name: mise-cache
+    host:
+      path: /root/mise_data_dir
 
-  # kyverno cluster and e2e tests
+---
+name: E2E Tests Kyverno Kubernetes v1.31.0
+kind: pipeline
+type: docker
+
+depends_on:
+  - Linting
+
+clone:
+  depth: 1
+
+platform:
+  os: linux
+  arch: amd64
+
+environment:
+  # Mise configuration.
+  MISE_DATA_DIR: "/mise-data"
+  MISE_OVERRIDE_CONFIG_FILENAMES: "mise.ci.toml"
+
+  # Cluster version.
+  CLUSTER_VERSION: "v1.31.0"
+
+  # Cluster names and kubeconfigs.
+  GATEKEEPER_CLUSTER_NAME: "${DRONE_REPO_NAME}-${DRONE_BUILD_NUMBER}-gatekeeper-v1.31.0"
+  KYVERNO_CLUSTER_NAME: "${DRONE_REPO_NAME}-${DRONE_BUILD_NUMBER}-kyverno-v1.31.0"
+  KUBECONFIG: "/drone/src/kubeconfig-kyverno-v1.31.0"
+
+  # Tool versions.
+  KIND_VERSION: "0.24.0"
+  KUBECTL_VERSION: "v1.31.0"
+  BATS_VERSION: "1.1.0"
+  KUSTOMIZE_VERSION: "5.6.0"
+
+trigger:
+  ref:
+    include:
+      - refs/tags/**
+
+steps:
   - name: Create Kind Cluster for Kyverno
     image: quay.io/sighup/mise:v2025.4.4
     pull: always
@@ -572,7 +702,7 @@ steps:
       # does not work when disabling the default CNI. It will always go in timeout.
       - kind create cluster --name $${KYVERNO_CLUSTER_NAME} --image registry.sighup.io/fury/kindest/node:$${CLUSTER_VERSION} --config katalog/tests/kind/config.yml
       # save the kubeconfig so we can use it from other steps.
-      - kind get kubeconfig --name $${KYVERNO_CLUSTER_NAME} > $${KUBECONFIG_KYVERNO}
+      - kind get kubeconfig --name $${KYVERNO_CLUSTER_NAME} > $${KUBECONFIG}
 
   - name: Kyverno End-to-End Tests
     image: quay.io/sighup/mise:v2025.4.4
@@ -589,7 +719,6 @@ steps:
       - |-
         mise use bats@$${BATS_VERSION} kubectl@$${KUBECTL_VERSION} kustomize@$${KUSTOMIZE_VERSION}
         eval "$(mise activate bash --shims)"
-        export KUBECONFIG=$${KUBECONFIG_KYVERNO}
       # wait for Kind cluster to be ready
       - until kubectl get serviceaccount default > /dev/null 2>&1; do echo "waiting for control-plane" && sleep 1; done
       - bats -t katalog/tests/kyverno.sh
@@ -622,7 +751,7 @@ volumes:
       path: /root/mise_data_dir
 
 ---
-name: E2E Tests Kubernetes v1.32.2
+name: E2E Tests Gatekeeper Kubernetes v1.32.2
 kind: pipeline
 type: docker
 
@@ -647,8 +776,7 @@ environment:
   # Cluster names and kubeconfigs.
   GATEKEEPER_CLUSTER_NAME: "${DRONE_REPO_NAME}-${DRONE_BUILD_NUMBER}-gatekeeper-v1.32.2"
   KYVERNO_CLUSTER_NAME: "${DRONE_REPO_NAME}-${DRONE_BUILD_NUMBER}-kyverno-v1.32.2"
-  KUBECONFIG_GATEKEEPER: "/drone/src/kubeconfig-gatekeeper-v1.32.2"
-  KUBECONFIG_KYVERNO: "/drone/src/kubeconfig-kyverno-v1.32.2"
+  KUBECONFIG: "/drone/src/kubeconfig-gatekeeper-v1.32.2"
 
   # Tool versions.
   KIND_VERSION: "0.27.0"
@@ -683,7 +811,7 @@ steps:
       # does not work when disabling the default CNI. It will always go in timeout.
       - kind create cluster --name $${GATEKEEPER_CLUSTER_NAME} --image registry.sighup.io/fury/kindest/node:$${CLUSTER_VERSION} --config katalog/tests/kind/config.yml
       # save the kubeconfig so we can use it from other steps.
-      - kind get kubeconfig --name $${GATEKEEPER_CLUSTER_NAME} > $${KUBECONFIG_GATEKEEPER}
+      - kind get kubeconfig --name $${GATEKEEPER_CLUSTER_NAME} > $${KUBECONFIG}
 
   - name: Gatekeeper End-to-End Tests
     image: quay.io/sighup/mise:v2025.4.4
@@ -700,7 +828,6 @@ steps:
       - |-
         mise use bats@$${BATS_VERSION} kubectl@$${KUBECTL_VERSION} kustomize@$${KUSTOMIZE_VERSION}
         eval "$(mise activate bash --shims)"
-        export KUBECONFIG=$${KUBECONFIG_GATEKEEPER}
       # wait for Kind cluster to be ready
       - until kubectl get serviceaccount default > /dev/null 2>&1; do echo "waiting for control-plane" && sleep 1; done
       - bats -t katalog/tests/gatekeeper.sh
@@ -724,8 +851,54 @@ steps:
       status:
         - success
         - failure
+volumes:
+  - name: dockersock
+    host:
+      path: /var/run/docker.sock
+  - name: mise-cache
+    host:
+      path: /root/mise_data_dir
 
-  # kyverno cluster and e2e tests
+---
+name: E2E Tests Kyverno Kubernetes v1.32.2
+kind: pipeline
+type: docker
+
+depends_on:
+  - Linting
+
+clone:
+  depth: 1
+
+platform:
+  os: linux
+  arch: amd64
+
+environment:
+  # Mise configuration.
+  MISE_DATA_DIR: "/mise-data"
+  MISE_OVERRIDE_CONFIG_FILENAMES: "mise.ci.toml"
+
+  # Cluster version.
+  CLUSTER_VERSION: "v1.32.2"
+
+  # Cluster names and kubeconfigs.
+  GATEKEEPER_CLUSTER_NAME: "${DRONE_REPO_NAME}-${DRONE_BUILD_NUMBER}-gatekeeper-v1.32.2"
+  KYVERNO_CLUSTER_NAME: "${DRONE_REPO_NAME}-${DRONE_BUILD_NUMBER}-kyverno-v1.32.2"
+  KUBECONFIG: "/drone/src/kubeconfig-kyverno-v1.32.2"
+
+  # Tool versions.
+  KIND_VERSION: "0.27.0"
+  KUBECTL_VERSION: "v1.32.2"
+  BATS_VERSION: "1.1.0"
+  KUSTOMIZE_VERSION: "5.6.0"
+
+trigger:
+  ref:
+    include:
+      - refs/tags/**
+
+steps:
   - name: Create Kind Cluster for Kyverno
     image: quay.io/sighup/mise:v2025.4.4
     pull: always
@@ -747,7 +920,7 @@ steps:
       # does not work when disabling the default CNI. It will always go in timeout.
       - kind create cluster --name $${KYVERNO_CLUSTER_NAME} --image registry.sighup.io/fury/kindest/node:$${CLUSTER_VERSION} --config katalog/tests/kind/config.yml
       # save the kubeconfig so we can use it from other steps.
-      - kind get kubeconfig --name $${KYVERNO_CLUSTER_NAME} > $${KUBECONFIG_KYVERNO}
+      - kind get kubeconfig --name $${KYVERNO_CLUSTER_NAME} > $${KUBECONFIG}
 
   - name: Kyverno End-to-End Tests
     image: quay.io/sighup/mise:v2025.4.4
@@ -764,7 +937,6 @@ steps:
       - |-
         mise use bats@$${BATS_VERSION} kubectl@$${KUBECTL_VERSION} kustomize@$${KUSTOMIZE_VERSION}
         eval "$(mise activate bash --shims)"
-        export KUBECONFIG=$${KUBECONFIG_KYVERNO}
       # wait for Kind cluster to be ready
       - until kubectl get serviceaccount default > /dev/null 2>&1; do echo "waiting for control-plane" && sleep 1; done
       - bats -t katalog/tests/kyverno.sh
@@ -797,7 +969,7 @@ volumes:
       path: /root/mise_data_dir
 
 ---
-name: E2E Tests Kubernetes v1.33.2
+name: E2E Tests Gatekeeper Kubernetes v1.33.2
 kind: pipeline
 type: docker
 
@@ -822,8 +994,7 @@ environment:
   # Cluster names and kubeconfigs.
   GATEKEEPER_CLUSTER_NAME: "${DRONE_REPO_NAME}-${DRONE_BUILD_NUMBER}-gatekeeper-v1.33.2"
   KYVERNO_CLUSTER_NAME: "${DRONE_REPO_NAME}-${DRONE_BUILD_NUMBER}-kyverno-v1.33.2"
-  KUBECONFIG_GATEKEEPER: "/drone/src/kubeconfig-gatekeeper-v1.33.2"
-  KUBECONFIG_KYVERNO: "/drone/src/kubeconfig-kyverno-v1.33.2"
+  KUBECONFIG: "/drone/src/kubeconfig-gatekeeper-v1.33.2"
 
   # Tool versions.
   KIND_VERSION: "0.30.0"
@@ -858,7 +1029,7 @@ steps:
       # does not work when disabling the default CNI. It will always go in timeout.
       - kind create cluster --name $${GATEKEEPER_CLUSTER_NAME} --image registry.sighup.io/fury/kindest/node:$${CLUSTER_VERSION} --config katalog/tests/kind/config.yml
       # save the kubeconfig so we can use it from other steps.
-      - kind get kubeconfig --name $${GATEKEEPER_CLUSTER_NAME} > $${KUBECONFIG_GATEKEEPER}
+      - kind get kubeconfig --name $${GATEKEEPER_CLUSTER_NAME} > $${KUBECONFIG}
 
   - name: Gatekeeper End-to-End Tests
     image: quay.io/sighup/mise:v2025.4.4
@@ -875,7 +1046,6 @@ steps:
       - |-
         mise use bats@$${BATS_VERSION} kubectl@$${KUBECTL_VERSION} kustomize@$${KUSTOMIZE_VERSION}
         eval "$(mise activate bash --shims)"
-        export KUBECONFIG=$${KUBECONFIG_GATEKEEPER}
       # wait for Kind cluster to be ready
       - until kubectl get serviceaccount default > /dev/null 2>&1; do echo "waiting for control-plane" && sleep 1; done
       - bats -t katalog/tests/gatekeeper.sh
@@ -899,8 +1069,54 @@ steps:
       status:
         - success
         - failure
+volumes:
+  - name: dockersock
+    host:
+      path: /var/run/docker.sock
+  - name: mise-cache
+    host:
+      path: /root/mise_data_dir
 
-  # kyverno cluster and e2e tests
+---
+name: E2E Tests Kyverno Kubernetes v1.33.2
+kind: pipeline
+type: docker
+
+depends_on:
+  - Linting
+
+clone:
+  depth: 1
+
+platform:
+  os: linux
+  arch: amd64
+
+environment:
+  # Mise configuration.
+  MISE_DATA_DIR: "/mise-data"
+  MISE_OVERRIDE_CONFIG_FILENAMES: "mise.ci.toml"
+
+  # Cluster version.
+  CLUSTER_VERSION: "v1.33.2"
+
+  # Cluster names and kubeconfigs.
+  GATEKEEPER_CLUSTER_NAME: "${DRONE_REPO_NAME}-${DRONE_BUILD_NUMBER}-gatekeeper-v1.33.2"
+  KYVERNO_CLUSTER_NAME: "${DRONE_REPO_NAME}-${DRONE_BUILD_NUMBER}-kyverno-v1.33.2"
+  KUBECONFIG: "/drone/src/kubeconfig-kyverno-v1.33.2"
+
+  # Tool versions.
+  KIND_VERSION: "0.30.0"
+  KUBECTL_VERSION: "v1.33.2"
+  BATS_VERSION: "1.1.0"
+  KUSTOMIZE_VERSION: "5.6.0"
+
+trigger:
+  ref:
+    include:
+      - refs/tags/**
+
+steps:
   - name: Create Kind Cluster for Kyverno
     image: quay.io/sighup/mise:v2025.4.4
     pull: always
@@ -922,7 +1138,7 @@ steps:
       # does not work when disabling the default CNI. It will always go in timeout.
       - kind create cluster --name $${KYVERNO_CLUSTER_NAME} --image registry.sighup.io/fury/kindest/node:$${CLUSTER_VERSION} --config katalog/tests/kind/config.yml
       # save the kubeconfig so we can use it from other steps.
-      - kind get kubeconfig --name $${KYVERNO_CLUSTER_NAME} > $${KUBECONFIG_KYVERNO}
+      - kind get kubeconfig --name $${KYVERNO_CLUSTER_NAME} > $${KUBECONFIG}
 
   - name: Kyverno End-to-End Tests
     image: quay.io/sighup/mise:v2025.4.4
@@ -939,7 +1155,6 @@ steps:
       - |-
         mise use bats@$${BATS_VERSION} kubectl@$${KUBECTL_VERSION} kustomize@$${KUSTOMIZE_VERSION}
         eval "$(mise activate bash --shims)"
-        export KUBECONFIG=$${KUBECONFIG_KYVERNO}
       # wait for Kind cluster to be ready
       - until kubectl get serviceaccount default > /dev/null 2>&1; do echo "waiting for control-plane" && sleep 1; done
       - bats -t katalog/tests/kyverno.sh
@@ -980,11 +1195,16 @@ clone:
   depth: 1
 
 depends_on:
-  - E2E Tests Kubernetes v1.33.2
-  - E2E Tests Kubernetes v1.32.2
-  - E2E Tests Kubernetes v1.31.0
-  - E2E Tests Kubernetes v1.30.4
-  - E2E Tests Kubernetes v1.29.8
+  - E2E Tests Gatekeeper Kubernetes v1.33.2
+  - E2E Tests Kyverno Kubernetes v1.33.2
+  - E2E Tests Gatekeeper Kubernetes v1.32.2
+  - E2E Tests Kyverno Kubernetes v1.32.2
+  - E2E Tests Gatekeeper Kubernetes v1.31.0
+  - E2E Tests Kyverno Kubernetes v1.31.0
+  - E2E Tests Gatekeeper Kubernetes v1.30.4
+  - E2E Tests Kyverno Kubernetes v1.30.4
+  - E2E Tests Gatekeeper Kubernetes v1.29.8
+  - E2E Tests Kyverno Kubernetes v1.29.8
 
 platform:
   os: linux
