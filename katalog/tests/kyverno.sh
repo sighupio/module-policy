@@ -14,8 +14,17 @@ set -o pipefail
   deploy() {
     kubectl apply -f 'https://raw.githubusercontent.com/sighupio/fury-kubernetes-monitoring/v3.3.1/katalog/prometheus-operator/crds/0servicemonitorCustomResourceDefinition.yaml'
     kubectl apply -f 'https://raw.githubusercontent.com/sighupio/fury-kubernetes-monitoring/v3.3.1/katalog/prometheus-operator/crds/0prometheusruleCustomResourceDefinition.yaml'
-    kubectl apply -f katalog/kyverno/crds.yaml --server-side
-    sleep 30
+    # Ensure monitoring CRDs are established before applying resources that use them
+    kubectl wait --for=condition=Established \
+      crd/servicemonitors.monitoring.coreos.com \
+      crd/prometheusrules.monitoring.coreos.com \
+      --timeout=10m
+
+    # Apply Kyverno CRDs and wait until they are established instead of sleeping
+    kubectl apply -f katalog/kyverno/core/crds.yaml --server-side
+    kubectl wait -f katalog/kyverno/core/crds.yaml \
+      --for=condition=Established \
+      --timeout=10m
     force_apply katalog/kyverno
   }
   loop_it deploy 30 2
@@ -23,15 +32,20 @@ set -o pipefail
   [[ "$status" -eq 0 ]]
 }
 
-@test "Wait for Kyverno Admission controller" {
+@test "Kyverno is Running" {
   info
-  test(){
-    readyReplicas=$(kubectl get deploy kyverno-admission-controller -n kyverno -o jsonpath="{.status.readyReplicas}")
-    if [ "${readyReplicas}" != "3" ]; then return 1; fi
-  }
-  loop_it test 30 2
-  status=${loop_it_result}
-  [[ "$status" -eq 0 ]]
+  # Wait for all Kyverno controllers to roll out
+  run kubectl rollout status deployment/kyverno-admission-controller -n kyverno --timeout=10m
+  [ "$status" -eq 0 ]
+
+  run kubectl rollout status deployment/kyverno-background-controller -n kyverno --timeout=10m
+  [ "$status" -eq 0 ]
+
+  run kubectl rollout status deployment/kyverno-cleanup-controller -n kyverno --timeout=10m
+  [ "$status" -eq 0 ]
+
+  run kubectl rollout status deployment/kyverno-reports-controller -n kyverno --timeout=10m
+  [ "$status" -eq 0 ]
 }
 
 # [ALLOW] Allowed by Gatekeeper Kubernetes requests
