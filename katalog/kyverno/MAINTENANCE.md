@@ -8,7 +8,7 @@ helm repo add kyverno https://kyverno.github.io/kyverno/
 helm repo update
 
 helm search repo kyverno/kyverno # get the latest chart version
-helm pull kyverno/kyverno --version 3.3.7  --untar --untardir /tmp
+helm pull kyverno/kyverno --version 3.6.0  --untar --untardir /tmp
 ```
 
 > Note: if the templating gives some error, change `kubeVersion:`  on the /tmp/kyverno/Chart.yaml.
