@@ -9,7 +9,7 @@
 </h1>
 <!-- markdownlint-enable MD033 -->
 
-![Release](https://img.shields.io/badge/Latest%20Release-v1.15.0-blue)
+![Release](https://img.shields.io/badge/Latest%20Release-v1.16.0-blue)
 ![License](https://img.shields.io/github/license/sighupio/module-policy?label=License)
 ![Slack](https://img.shields.io/badge/slack-@kubernetes/fury-yellow.svg?logo=slack&label=Slack)
 
@@ -38,11 +38,11 @@ Policy Module provides the following packages:
 
 | Package                                                | Version   | Description                                                                                                                                             |
 | ------------------------------------------------------ | --------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| [Gatekeeper Core](katalog/gatekeeper/core)             | `v3.20.1` | Gatekeeper deployment, ready to enforce rules.                                                                                                          |
+| [Gatekeeper Core](katalog/gatekeeper/core)             | `v3.21.0` | Gatekeeper deployment, ready to enforce rules.                                                                                                          |
 | [Gatekeeper Rules](katalog/gatekeeper/rules)           | `N.A.`    | A set of custom rules to get started with policy enforcement.                                                                                           |
 | [Gatekeeper Monitoring](katalog/gatekeeper/monitoring) | `N.A.`    | Metrics, alerts and dashboard for monitoring Gatekeeper.                                                                                                |
-| [Gatekeeper Policy Manager](katalog/gatekeeper/gpm)    | `v1.1.0` | Gatekeeper Policy Manager, a simple to use web-ui for Gatekeeper.                                                                                       |
-| [Kyverno](katalog/kyverno)                             | `v1.15.1` | Kyverno is a policy engine designed for Kubernetes. It can validate, mutate, and generate configurations using admission controls and background scans. |
+| [Gatekeeper Policy Manager](katalog/gatekeeper/gpm)    | `v1.1.0`  | Gatekeeper Policy Manager, a simple to use web-ui for Gatekeeper.                                                                                       |
+| [Kyverno](katalog/kyverno)                             | `v1.16.0` | Kyverno is a policy engine designed for Kubernetes. It can validate, mutate, and generate configurations using admission controls and background scans. |
 
 Click on each package name to see its full documentation.
 
@@ -50,11 +50,10 @@ Click on each package name to see its full documentation.
 
 | Kubernetes Version |   Compatibility    | Notes           |
 | ------------------ | :----------------: | --------------- |
+| `1.34.x`           | :white_check_mark: | No known issues |
 | `1.33.x`           | :white_check_mark: | No known issues |
 | `1.32.x`           | :white_check_mark: | No known issues |
 | `1.31.x`           | :white_check_mark: | No known issues |
-| `1.30.x`           | :white_check_mark: | No known issues |
-| `1.29.x`           | :white_check_mark: | No known issues |
 
 Check the [compatibility matrix][compatibility-matrix] for additional information on previous releases of the module.
 
@@ -82,7 +81,7 @@ Check the [compatibility matrix][compatibility-matrix] for additional informatio
 ```yaml
 bases:
   - name: opa/gatekeeper
-    version: "1.15.0"
+    version: "1.16.0"
 ```
 
 > See `furyctl` [documentation][furyctl-repo] for additional details about `Furyfile.yml` format.
@@ -196,7 +195,7 @@ Notice that the alert for when the Gatekeeper webhook is in `Ignore` mode (the d
 ```yaml
 bases:
   - name: opa/kyverno
-    version: "1.15.0"
+    version: "1.16.0"
 ```
 
 > See `furyctl` [documentation][furyctl-repo] for additional details about `Furyfile.yml` format.
