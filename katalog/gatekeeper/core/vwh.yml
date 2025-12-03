@@ -37,6 +37,8 @@ webhooks:
     operations:
     - CREATE
     - UPDATE
+    # Uncomment the following line and line 37 if you want to use the namespace protection rule.
+    # - DELETE
     resources:
     - '*'
     - pods/ephemeralcontainers
@@ -82,6 +84,8 @@ webhooks:
     operations:
     - CREATE
     - UPDATE
+    # Uncomment the following line and line 37 if you want to use the namespace protection rule.
+    # - DELETE
     resources:
     - namespaces
   sideEffects: None
