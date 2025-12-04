@@ -24,6 +24,3 @@ images:
     newName: registry.sighup.io/fury/kyverno/cleanup-controller
   - name: reg.kyverno.io/kyverno/reports-controller
     newName: registry.sighup.io/fury/kyverno/reports-controller
-  - name: bitnami/kubectl
-    newName: registry.sighup.io/fury/bitnami/kubectl
-    newTag: "1.30.2"
