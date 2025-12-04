@@ -16,19 +16,14 @@ resources:
 images:
   - name: reg.kyverno.io/kyverno/kyverno
     newName: registry.sighup.io/fury/kyverno/kyverno
-    newTag: v1.16.0
   - name: reg.kyverno.io/kyverno/kyvernopre
     newName: registry.sighup.io/fury/kyverno/kyvernopre
-    newTag: v1.16.0
   - name: reg.kyverno.io/kyverno/background-controller
     newName: registry.sighup.io/fury/kyverno/background-controller
-    newTag: v1.16.0
   - name: reg.kyverno.io/kyverno/cleanup-controller
     newName: registry.sighup.io/fury/kyverno/cleanup-controller
-    newTag: v1.16.0
   - name: reg.kyverno.io/kyverno/reports-controller
     newName: registry.sighup.io/fury/kyverno/reports-controller
-    newTag: v1.16.0
   - name: bitnami/kubectl
     newName: registry.sighup.io/fury/bitnami/kubectl
     newTag: "1.30.2"
