@@ -21,6 +21,7 @@ config:
           - logging
           - monitoring
           - ingress-nginx
+          - ingress-haproxy
           - cert-manager
           - tigera-operator
           - calico-system
@@ -28,6 +29,8 @@ config:
           - vmware-system-csi
           - pomerium
           - tracing
+          - forecastle
+          - external-dns
 
 # Metrics configuration
 metricsConfig:

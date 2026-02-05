@@ -10,6 +10,7 @@
       - logging
       - monitoring
       - ingress-nginx
+      - ingress-haproxy
       - cert-manager
       - tigera-operator
       - calico-system
@@ -17,6 +18,8 @@
       - vmware-system-csi
       - pomerium
       - tracing
+      - forecastle
+      - external-dns
     kinds:
       - apiGroups: ["apps", "extensions"]
         kinds: ["Deployment"]

@@ -10,12 +10,15 @@
       - logging
       - monitoring
       - ingress-nginx
+      - ingress-haproxy
       - cert-manager
       - tigera-operator
       - calico-system
       - calico-api
       - vmware-system-csi
       - pomerium
+      - forecastle
+      - external-dns
     kinds:
       - apiGroups: ["extensions", "networking.k8s.io"]
         kinds: ["Ingress"]
