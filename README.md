@@ -38,7 +38,7 @@ Policy Module provides the following packages:
 
 | Package                                                | Version   | Description                                                                                                                                             |
 | ------------------------------------------------------ | --------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| [Gatekeeper Core](katalog/gatekeeper/core)             | `v3.21.0` | Gatekeeper deployment, ready to enforce rules.                                                                                                          |
+| [Gatekeeper Core](katalog/gatekeeper/core)             | `v3.22.2` | Gatekeeper deployment, ready to enforce rules.                                                                                                          |
 | [Gatekeeper Rules](katalog/gatekeeper/rules)           | `N.A.`    | A set of custom rules to get started with policy enforcement.                                                                                           |
 | [Gatekeeper Monitoring](katalog/gatekeeper/monitoring) | `N.A.`    | Metrics, alerts and dashboard for monitoring Gatekeeper.                                                                                                |
 | [Gatekeeper Policy Manager](katalog/gatekeeper/gpm)    | `v1.1.0`  | Gatekeeper Policy Manager, a simple to use web-ui for Gatekeeper.                                                                                       |
@@ -50,6 +50,7 @@ Click on each package name to see its full documentation.
 
 | Kubernetes Version |   Compatibility    | Notes           |
 | ------------------ | :----------------: | --------------- |
+| `1.35.x`           | :white_check_mark: | No known issues |
 | `1.34.x`           | :white_check_mark: | No known issues |
 | `1.33.x`           | :white_check_mark: | No known issues |
 | `1.32.x`           | :white_check_mark: | No known issues |
