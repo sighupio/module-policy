@@ -4,8 +4,8 @@
 
 ```bash
 # Assuming ${PWD} == the root of the project
-export GATEKEEPER_VERSION=v3.21.0
-curl -l https://raw.githubusercontent.com/open-policy-agent/gatekeeper/refs/tags/v3.21.0/deploy/gatekeeper.yaml -o upstream.yaml
+export GATEKEEPER_VERSION=v3.22.2
+curl -l https://raw.githubusercontent.com/open-policy-agent/gatekeeper/refs/tags/v3.22.2/deploy/gatekeeper.yaml -o upstream.yaml
 cat katalog/gatekeeper/core/ns.yml \
     katalog/gatekeeper/core/crd.yml \
     katalog/gatekeeper/core/sa.yml \
