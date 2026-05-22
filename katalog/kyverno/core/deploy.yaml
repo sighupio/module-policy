@@ -3,7 +3,6 @@
 # license that can be found in the LICENSE file.
 
 ---
----
 # Source: kyverno/templates/admission-controller/poddisruptionbudget.yaml
 apiVersion: policy/v1
 kind: PodDisruptionBudget
@@ -14,9 +13,10 @@ metadata:
     app.kubernetes.io/component: admission-controller
     app.kubernetes.io/instance: kyverno
     app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: kyverno-admission-controller
     app.kubernetes.io/part-of: kyverno
-    app.kubernetes.io/version: 3.6.0
-    helm.sh/chart: kyverno-3.6.0
+    app.kubernetes.io/version: 3.8.1
+    helm.sh/chart: kyverno-3.8.1
 spec:
   
   minAvailable: 1
@@ -36,9 +36,10 @@ metadata:
     app.kubernetes.io/component: background-controller
     app.kubernetes.io/instance: kyverno
     app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: kyverno-background-controller
     app.kubernetes.io/part-of: kyverno
-    app.kubernetes.io/version: 3.6.0
-    helm.sh/chart: kyverno-3.6.0
+    app.kubernetes.io/version: 3.8.1
+    helm.sh/chart: kyverno-3.8.1
 spec:
   
   minAvailable: 1
@@ -58,9 +59,10 @@ metadata:
     app.kubernetes.io/component: cleanup-controller
     app.kubernetes.io/instance: kyverno
     app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: kyverno-cleanup-controller
     app.kubernetes.io/part-of: kyverno
-    app.kubernetes.io/version: 3.6.0
-    helm.sh/chart: kyverno-3.6.0
+    app.kubernetes.io/version: 3.8.1
+    helm.sh/chart: kyverno-3.8.1
 spec:
   
   minAvailable: 1
@@ -80,9 +82,10 @@ metadata:
     app.kubernetes.io/component: reports-controller
     app.kubernetes.io/instance: kyverno
     app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: kyverno-reports-controller
     app.kubernetes.io/part-of: kyverno
-    app.kubernetes.io/version: 3.6.0
-    helm.sh/chart: kyverno-3.6.0
+    app.kubernetes.io/version: 3.8.1
+    helm.sh/chart: kyverno-3.8.1
 spec:
   
   minAvailable: 1
@@ -102,9 +105,10 @@ metadata:
     app.kubernetes.io/component: admission-controller
     app.kubernetes.io/instance: kyverno
     app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: kyverno-admission-controller
     app.kubernetes.io/part-of: kyverno
-    app.kubernetes.io/version: 3.6.0
-    helm.sh/chart: kyverno-3.6.0
+    app.kubernetes.io/version: 3.8.1
+    helm.sh/chart: kyverno-3.8.1
 automountServiceAccountToken: false
 ---
 # Source: kyverno/templates/background-controller/serviceaccount.yaml
@@ -117,9 +121,10 @@ metadata:
     app.kubernetes.io/component: background-controller
     app.kubernetes.io/instance: kyverno
     app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: kyverno-background-controller
     app.kubernetes.io/part-of: kyverno
-    app.kubernetes.io/version: 3.6.0
-    helm.sh/chart: kyverno-3.6.0
+    app.kubernetes.io/version: 3.8.1
+    helm.sh/chart: kyverno-3.8.1
 automountServiceAccountToken: false
 ---
 # Source: kyverno/templates/cleanup-controller/serviceaccount.yaml
@@ -132,9 +137,10 @@ metadata:
     app.kubernetes.io/component: cleanup-controller
     app.kubernetes.io/instance: kyverno
     app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: kyverno-cleanup-controller
     app.kubernetes.io/part-of: kyverno
-    app.kubernetes.io/version: 3.6.0
-    helm.sh/chart: kyverno-3.6.0
+    app.kubernetes.io/version: 3.8.1
+    helm.sh/chart: kyverno-3.8.1
 automountServiceAccountToken: false
 ---
 # Source: kyverno/templates/reports-controller/serviceaccount.yaml
@@ -147,9 +153,10 @@ metadata:
     app.kubernetes.io/component: reports-controller
     app.kubernetes.io/instance: kyverno
     app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: kyverno-reports-controller
     app.kubernetes.io/part-of: kyverno
-    app.kubernetes.io/version: 3.6.0
-    helm.sh/chart: kyverno-3.6.0
+    app.kubernetes.io/version: 3.8.1
+    helm.sh/chart: kyverno-3.8.1
 automountServiceAccountToken: false
 ---
 # Source: kyverno/templates/config/configmap.yaml
@@ -163,8 +170,8 @@ metadata:
     app.kubernetes.io/instance: kyverno
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/part-of: kyverno
-    app.kubernetes.io/version: 3.6.0
-    helm.sh/chart: kyverno-3.6.0
+    app.kubernetes.io/version: 3.8.1
+    helm.sh/chart: kyverno-3.8.1
   annotations:
     helm.sh/resource-policy: "keep"
 data:
@@ -292,8 +299,8 @@ metadata:
     app.kubernetes.io/instance: kyverno
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/part-of: kyverno
-    app.kubernetes.io/version: 3.6.0
-    helm.sh/chart: kyverno-3.6.0
+    app.kubernetes.io/version: 3.8.1
+    helm.sh/chart: kyverno-3.8.1
 data:
   namespaces: "{\"exclude\":[],\"include\":[]}"
   metricsExposure: "{\"kyverno_admission_requests_total\":{\"disabledLabelDimensions\":[\"resource_namespace\"]},\"kyverno_admission_review_duration_seconds\":{\"disabledLabelDimensions\":[\"resource_namespace\"]},\"kyverno_cleanup_controller_deletedobjects_total\":{\"disabledLabelDimensions\":[\"resource_namespace\",\"policy_namespace\"]},\"kyverno_generating_policy_execution_duration_seconds\":{\"disabledLabelDimensions\":[\"resource_namespace\",\"resource_request_operation\"]},\"kyverno_image_validating_policy_execution_duration_seconds\":{\"disabledLabelDimensions\":[\"resource_namespace\",\"resource_request_operation\"]},\"kyverno_mutating_policy_execution_duration_seconds\":{\"disabledLabelDimensions\":[\"resource_namespace\",\"resource_request_operation\"]},\"kyverno_policy_execution_duration_seconds\":{\"disabledLabelDimensions\":[\"resource_namespace\",\"resource_request_operation\"]},\"kyverno_policy_results_total\":{\"disabledLabelDimensions\":[\"resource_namespace\",\"policy_namespace\"]},\"kyverno_policy_rule_info_total\":{\"disabledLabelDimensions\":[\"resource_namespace\",\"policy_namespace\"]},\"kyverno_validating_policy_execution_duration_seconds\":{\"disabledLabelDimensions\":[\"resource_namespace\",\"resource_request_operation\"]}}"
@@ -308,9 +315,10 @@ metadata:
     app.kubernetes.io/component: admission-controller
     app.kubernetes.io/instance: kyverno
     app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: kyverno-admission-controller
     app.kubernetes.io/part-of: kyverno
-    app.kubernetes.io/version: 3.6.0
-    helm.sh/chart: kyverno-3.6.0
+    app.kubernetes.io/version: 3.8.1
+    helm.sh/chart: kyverno-3.8.1
 aggregationRule:
   clusterRoleSelectors:
     - matchLabels:
@@ -329,9 +337,10 @@ metadata:
     app.kubernetes.io/component: admission-controller
     app.kubernetes.io/instance: kyverno
     app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: kyverno-admission-controller
     app.kubernetes.io/part-of: kyverno
-    app.kubernetes.io/version: 3.6.0
-    helm.sh/chart: kyverno-3.6.0
+    app.kubernetes.io/version: 3.8.1
+    helm.sh/chart: kyverno-3.8.1
 rules:
   - apiGroups:
       - apiextensions.k8s.io
@@ -344,8 +353,12 @@ rules:
     resources:
       - mutatingwebhookconfigurations
       - validatingwebhookconfigurations
+      # Always grant permissions for admission policies to support per-policy generation overrides 
+      # even when global generateValidatingAdmissionPolicy/generateMutatingAdmissionPolicy flags are disabled.
       - validatingadmissionpolicies
       - validatingadmissionpolicybindings
+      - mutatingadmissionpolicies
+      - mutatingadmissionpolicybindings
     verbs:
       - create
       - delete
@@ -410,8 +423,12 @@ rules:
       - namespacedimagevalidatingpolicies/status
       - generatingpolicies
       - generatingpolicies/status
+      - namespacedgeneratingpolicies
+      - namespacedgeneratingpolicies/status
       - mutatingpolicies
       - mutatingpolicies/status
+      - namespacedmutatingpolicies
+      - namespacedmutatingpolicies/status
     verbs:
       - create
       - delete
@@ -507,9 +524,10 @@ metadata:
     app.kubernetes.io/component: background-controller
     app.kubernetes.io/instance: kyverno
     app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: kyverno-background-controller
     app.kubernetes.io/part-of: kyverno
-    app.kubernetes.io/version: 3.6.0
-    helm.sh/chart: kyverno-3.6.0
+    app.kubernetes.io/version: 3.8.1
+    helm.sh/chart: kyverno-3.8.1
 aggregationRule:
   clusterRoleSelectors:
     - matchLabels:
@@ -528,9 +546,10 @@ metadata:
     app.kubernetes.io/component: background-controller
     app.kubernetes.io/instance: kyverno
     app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: kyverno-background-controller
     app.kubernetes.io/part-of: kyverno
-    app.kubernetes.io/version: 3.6.0
-    helm.sh/chart: kyverno-3.6.0
+    app.kubernetes.io/version: 3.8.1
+    helm.sh/chart: kyverno-3.8.1
 rules:
   - apiGroups:
       - apiextensions.k8s.io
@@ -563,7 +582,9 @@ rules:
       - policies.kyverno.io
     resources:
       - generatingpolicies
+      - namespacedgeneratingpolicies
       - mutatingpolicies
+      - namespacedmutatingpolicies
       - policyexceptions
     verbs:
       - create
@@ -673,9 +694,10 @@ metadata:
     app.kubernetes.io/component: cleanup-controller
     app.kubernetes.io/instance: kyverno
     app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: kyverno-cleanup-controller
     app.kubernetes.io/part-of: kyverno
-    app.kubernetes.io/version: 3.6.0
-    helm.sh/chart: kyverno-3.6.0
+    app.kubernetes.io/version: 3.8.1
+    helm.sh/chart: kyverno-3.8.1
 aggregationRule:
   clusterRoleSelectors:
     - matchLabels:
@@ -694,9 +716,10 @@ metadata:
     app.kubernetes.io/component: cleanup-controller
     app.kubernetes.io/instance: kyverno
     app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: kyverno-cleanup-controller
     app.kubernetes.io/part-of: kyverno
-    app.kubernetes.io/version: 3.6.0
-    helm.sh/chart: kyverno-3.6.0
+    app.kubernetes.io/version: 3.8.1
+    helm.sh/chart: kyverno-3.8.1
 rules:
   - apiGroups:
       - apiextensions.k8s.io
@@ -812,8 +835,8 @@ metadata:
     app.kubernetes.io/instance: kyverno
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/part-of: kyverno
-    app.kubernetes.io/version: 3.6.0
-    helm.sh/chart: kyverno-3.6.0
+    app.kubernetes.io/version: 3.8.1
+    helm.sh/chart: kyverno-3.8.1
     rbac.authorization.k8s.io/aggregate-to-admin: "true"
 rules:
   - apiGroups:
@@ -842,8 +865,8 @@ metadata:
     app.kubernetes.io/instance: kyverno
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/part-of: kyverno
-    app.kubernetes.io/version: 3.6.0
-    helm.sh/chart: kyverno-3.6.0
+    app.kubernetes.io/version: 3.8.1
+    helm.sh/chart: kyverno-3.8.1
     rbac.authorization.k8s.io/aggregate-to-view: "true"
 rules:
   - apiGroups:
@@ -868,8 +891,8 @@ metadata:
     app.kubernetes.io/instance: kyverno
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/part-of: kyverno
-    app.kubernetes.io/version: 3.6.0
-    helm.sh/chart: kyverno-3.6.0
+    app.kubernetes.io/version: 3.8.1
+    helm.sh/chart: kyverno-3.8.1
     rbac.authorization.k8s.io/aggregate-to-admin: "true"
 rules:
   - apiGroups:
@@ -896,8 +919,8 @@ metadata:
     app.kubernetes.io/instance: kyverno
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/part-of: kyverno
-    app.kubernetes.io/version: 3.6.0
-    helm.sh/chart: kyverno-3.6.0
+    app.kubernetes.io/version: 3.8.1
+    helm.sh/chart: kyverno-3.8.1
     rbac.authorization.k8s.io/aggregate-to-view: "true"
 rules:
   - apiGroups:
@@ -920,8 +943,8 @@ metadata:
     app.kubernetes.io/instance: kyverno
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/part-of: kyverno
-    app.kubernetes.io/version: 3.6.0
-    helm.sh/chart: kyverno-3.6.0
+    app.kubernetes.io/version: 3.8.1
+    helm.sh/chart: kyverno-3.8.1
     rbac.authorization.k8s.io/aggregate-to-admin: "true"
 rules:
   - apiGroups:
@@ -948,8 +971,8 @@ metadata:
     app.kubernetes.io/instance: kyverno
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/part-of: kyverno
-    app.kubernetes.io/version: 3.6.0
-    helm.sh/chart: kyverno-3.6.0
+    app.kubernetes.io/version: 3.8.1
+    helm.sh/chart: kyverno-3.8.1
     rbac.authorization.k8s.io/aggregate-to-view: "true"
 rules:
   - apiGroups:
@@ -972,8 +995,8 @@ metadata:
     app.kubernetes.io/instance: kyverno
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/part-of: kyverno
-    app.kubernetes.io/version: 3.6.0
-    helm.sh/chart: kyverno-3.6.0
+    app.kubernetes.io/version: 3.8.1
+    helm.sh/chart: kyverno-3.8.1
     rbac.authorization.k8s.io/aggregate-to-admin: "true"
 rules:
   - apiGroups:
@@ -999,8 +1022,8 @@ metadata:
     app.kubernetes.io/instance: kyverno
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/part-of: kyverno
-    app.kubernetes.io/version: 3.6.0
-    helm.sh/chart: kyverno-3.6.0
+    app.kubernetes.io/version: 3.8.1
+    helm.sh/chart: kyverno-3.8.1
     rbac.authorization.k8s.io/aggregate-to-view: "true"
 rules:
   - apiGroups:
@@ -1021,9 +1044,10 @@ metadata:
     app.kubernetes.io/component: reports-controller
     app.kubernetes.io/instance: kyverno
     app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: kyverno-reports-controller
     app.kubernetes.io/part-of: kyverno
-    app.kubernetes.io/version: 3.6.0
-    helm.sh/chart: kyverno-3.6.0
+    app.kubernetes.io/version: 3.8.1
+    helm.sh/chart: kyverno-3.8.1
 aggregationRule:
   clusterRoleSelectors:
     - matchLabels:
@@ -1042,9 +1066,10 @@ metadata:
     app.kubernetes.io/component: reports-controller
     app.kubernetes.io/instance: kyverno
     app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: kyverno-reports-controller
     app.kubernetes.io/part-of: kyverno
-    app.kubernetes.io/version: 3.6.0
-    helm.sh/chart: kyverno-3.6.0
+    app.kubernetes.io/version: 3.8.1
+    helm.sh/chart: kyverno-3.8.1
 rules:
   - apiGroups:
       - apiextensions.k8s.io
@@ -1090,7 +1115,9 @@ rules:
       - namespacedimagevalidatingpolicies
       - namespacedimagevalidatingpolicies/status
       - generatingpolicies
+      - namespacedgeneratingpolicies
       - mutatingpolicies
+      - namespacedmutatingpolicies
     verbs:
       - create
       - delete
@@ -1182,9 +1209,10 @@ metadata:
     app.kubernetes.io/component: admission-controller
     app.kubernetes.io/instance: kyverno
     app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: kyverno-admission-controller
     app.kubernetes.io/part-of: kyverno
-    app.kubernetes.io/version: 3.6.0
-    helm.sh/chart: kyverno-3.6.0
+    app.kubernetes.io/version: 3.8.1
+    helm.sh/chart: kyverno-3.8.1
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
@@ -1203,9 +1231,10 @@ metadata:
     app.kubernetes.io/component: admission-controller
     app.kubernetes.io/instance: kyverno
     app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: kyverno-admission-controller
     app.kubernetes.io/part-of: kyverno
-    app.kubernetes.io/version: 3.6.0
-    helm.sh/chart: kyverno-3.6.0
+    app.kubernetes.io/version: 3.8.1
+    helm.sh/chart: kyverno-3.8.1
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
@@ -1224,9 +1253,10 @@ metadata:
     app.kubernetes.io/component: background-controller
     app.kubernetes.io/instance: kyverno
     app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: kyverno-background-controller
     app.kubernetes.io/part-of: kyverno
-    app.kubernetes.io/version: 3.6.0
-    helm.sh/chart: kyverno-3.6.0
+    app.kubernetes.io/version: 3.8.1
+    helm.sh/chart: kyverno-3.8.1
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
@@ -1245,9 +1275,10 @@ metadata:
     app.kubernetes.io/component: background-controller
     app.kubernetes.io/instance: kyverno
     app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: kyverno-background-controller
     app.kubernetes.io/part-of: kyverno
-    app.kubernetes.io/version: 3.6.0
-    helm.sh/chart: kyverno-3.6.0
+    app.kubernetes.io/version: 3.8.1
+    helm.sh/chart: kyverno-3.8.1
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
@@ -1266,9 +1297,10 @@ metadata:
     app.kubernetes.io/component: cleanup-controller
     app.kubernetes.io/instance: kyverno
     app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: kyverno-cleanup-controller
     app.kubernetes.io/part-of: kyverno
-    app.kubernetes.io/version: 3.6.0
-    helm.sh/chart: kyverno-3.6.0
+    app.kubernetes.io/version: 3.8.1
+    helm.sh/chart: kyverno-3.8.1
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
@@ -1287,9 +1319,10 @@ metadata:
     app.kubernetes.io/component: reports-controller
     app.kubernetes.io/instance: kyverno
     app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: kyverno-reports-controller
     app.kubernetes.io/part-of: kyverno
-    app.kubernetes.io/version: 3.6.0
-    helm.sh/chart: kyverno-3.6.0
+    app.kubernetes.io/version: 3.8.1
+    helm.sh/chart: kyverno-3.8.1
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
@@ -1308,9 +1341,10 @@ metadata:
     app.kubernetes.io/component: reports-controller
     app.kubernetes.io/instance: kyverno
     app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: kyverno-reports-controller
     app.kubernetes.io/part-of: kyverno
-    app.kubernetes.io/version: 3.6.0
-    helm.sh/chart: kyverno-3.6.0
+    app.kubernetes.io/version: 3.8.1
+    helm.sh/chart: kyverno-3.8.1
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
@@ -1330,9 +1364,10 @@ metadata:
     app.kubernetes.io/component: admission-controller
     app.kubernetes.io/instance: kyverno
     app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: kyverno-admission-controller
     app.kubernetes.io/part-of: kyverno
-    app.kubernetes.io/version: 3.6.0
-    helm.sh/chart: kyverno-3.6.0
+    app.kubernetes.io/version: 3.8.1
+    helm.sh/chart: kyverno-3.8.1
 rules:
   - apiGroups:
       - ''
@@ -1390,9 +1425,10 @@ metadata:
     app.kubernetes.io/component: background-controller
     app.kubernetes.io/instance: kyverno
     app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: kyverno-background-controller
     app.kubernetes.io/part-of: kyverno
-    app.kubernetes.io/version: 3.6.0
-    helm.sh/chart: kyverno-3.6.0
+    app.kubernetes.io/version: 3.8.1
+    helm.sh/chart: kyverno-3.8.1
   namespace: kyverno
 rules:
   - apiGroups:
@@ -1441,9 +1477,10 @@ metadata:
     app.kubernetes.io/component: cleanup-controller
     app.kubernetes.io/instance: kyverno
     app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: kyverno-cleanup-controller
     app.kubernetes.io/part-of: kyverno
-    app.kubernetes.io/version: 3.6.0
-    helm.sh/chart: kyverno-3.6.0
+    app.kubernetes.io/version: 3.8.1
+    helm.sh/chart: kyverno-3.8.1
   namespace: kyverno
 rules:
   - apiGroups:
@@ -1465,6 +1502,8 @@ rules:
     resourceNames:
       - kyverno-cleanup-controller.kyverno.svc.kyverno-tls-ca
       - kyverno-cleanup-controller.kyverno.svc.kyverno-tls-pair
+      - kyverno-cleanup-controller.kyverno.metering.kyverno-tls-ca
+      - kyverno-cleanup-controller.kyverno.metering.kyverno-tls-pair
   - apiGroups:
       - ''
     resources:
@@ -1494,6 +1533,12 @@ rules:
     resourceNames:
       - kyverno-cleanup-controller
   - apiGroups:
+      - discovery.k8s.io
+    resources:
+      - endpointslices
+    verbs:
+      - list
+  - apiGroups:
       - apps
     resources:
       - deployments
@@ -1511,9 +1556,10 @@ metadata:
     app.kubernetes.io/component: reports-controller
     app.kubernetes.io/instance: kyverno
     app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: kyverno-reports-controller
     app.kubernetes.io/part-of: kyverno
-    app.kubernetes.io/version: 3.6.0
-    helm.sh/chart: kyverno-3.6.0
+    app.kubernetes.io/version: 3.8.1
+    helm.sh/chart: kyverno-3.8.1
   namespace: kyverno
 rules:
   - apiGroups:
@@ -1563,9 +1609,10 @@ metadata:
     app.kubernetes.io/component: admission-controller
     app.kubernetes.io/instance: kyverno
     app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: kyverno-admission-controller
     app.kubernetes.io/part-of: kyverno
-    app.kubernetes.io/version: 3.6.0
-    helm.sh/chart: kyverno-3.6.0
+    app.kubernetes.io/version: 3.8.1
+    helm.sh/chart: kyverno-3.8.1
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: Role
@@ -1584,9 +1631,10 @@ metadata:
     app.kubernetes.io/component: background-controller
     app.kubernetes.io/instance: kyverno
     app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: kyverno-background-controller
     app.kubernetes.io/part-of: kyverno
-    app.kubernetes.io/version: 3.6.0
-    helm.sh/chart: kyverno-3.6.0
+    app.kubernetes.io/version: 3.8.1
+    helm.sh/chart: kyverno-3.8.1
   namespace: kyverno
 roleRef:
   apiGroup: rbac.authorization.k8s.io
@@ -1606,9 +1654,10 @@ metadata:
     app.kubernetes.io/component: cleanup-controller
     app.kubernetes.io/instance: kyverno
     app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: kyverno-cleanup-controller
     app.kubernetes.io/part-of: kyverno
-    app.kubernetes.io/version: 3.6.0
-    helm.sh/chart: kyverno-3.6.0
+    app.kubernetes.io/version: 3.8.1
+    helm.sh/chart: kyverno-3.8.1
   namespace: kyverno
 roleRef:
   apiGroup: rbac.authorization.k8s.io
@@ -1628,9 +1677,10 @@ metadata:
     app.kubernetes.io/component: reports-controller
     app.kubernetes.io/instance: kyverno
     app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: kyverno-reports-controller
     app.kubernetes.io/part-of: kyverno
-    app.kubernetes.io/version: 3.6.0
-    helm.sh/chart: kyverno-3.6.0
+    app.kubernetes.io/version: 3.8.1
+    helm.sh/chart: kyverno-3.8.1
   namespace: kyverno
 roleRef:
   apiGroup: rbac.authorization.k8s.io
@@ -1651,9 +1701,10 @@ metadata:
     app.kubernetes.io/component: admission-controller
     app.kubernetes.io/instance: kyverno
     app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: kyverno-admission-controller
     app.kubernetes.io/part-of: kyverno
-    app.kubernetes.io/version: 3.6.0
-    helm.sh/chart: kyverno-3.6.0
+    app.kubernetes.io/version: 3.8.1
+    helm.sh/chart: kyverno-3.8.1
 spec:
   ports:
   - port: 443
@@ -1677,9 +1728,10 @@ metadata:
     app.kubernetes.io/component: admission-controller
     app.kubernetes.io/instance: kyverno
     app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: kyverno-admission-controller
     app.kubernetes.io/part-of: kyverno
-    app.kubernetes.io/version: 3.6.0
-    helm.sh/chart: kyverno-3.6.0
+    app.kubernetes.io/version: 3.8.1
+    helm.sh/chart: kyverno-3.8.1
 spec:
   ports:
   - port: 8000
@@ -1702,9 +1754,10 @@ metadata:
     app.kubernetes.io/component: background-controller
     app.kubernetes.io/instance: kyverno
     app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: kyverno-background-controller
     app.kubernetes.io/part-of: kyverno
-    app.kubernetes.io/version: 3.6.0
-    helm.sh/chart: kyverno-3.6.0
+    app.kubernetes.io/version: 3.8.1
+    helm.sh/chart: kyverno-3.8.1
 spec:
   ports:
   - port: 8000
@@ -1727,9 +1780,10 @@ metadata:
     app.kubernetes.io/component: cleanup-controller
     app.kubernetes.io/instance: kyverno
     app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: kyverno-cleanup-controller
     app.kubernetes.io/part-of: kyverno
-    app.kubernetes.io/version: 3.6.0
-    helm.sh/chart: kyverno-3.6.0
+    app.kubernetes.io/version: 3.8.1
+    helm.sh/chart: kyverno-3.8.1
 spec:
   ports:
   - port: 443
@@ -1753,9 +1807,10 @@ metadata:
     app.kubernetes.io/component: cleanup-controller
     app.kubernetes.io/instance: kyverno
     app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: kyverno-cleanup-controller
     app.kubernetes.io/part-of: kyverno
-    app.kubernetes.io/version: 3.6.0
-    helm.sh/chart: kyverno-3.6.0
+    app.kubernetes.io/version: 3.8.1
+    helm.sh/chart: kyverno-3.8.1
 spec:
   ports:
   - port: 8000
@@ -1778,9 +1833,10 @@ metadata:
     app.kubernetes.io/component: reports-controller
     app.kubernetes.io/instance: kyverno
     app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: kyverno-reports-controller
     app.kubernetes.io/part-of: kyverno
-    app.kubernetes.io/version: 3.6.0
-    helm.sh/chart: kyverno-3.6.0
+    app.kubernetes.io/version: 3.8.1
+    helm.sh/chart: kyverno-3.8.1
 spec:
   ports:
   - port: 8000
@@ -1803,9 +1859,10 @@ metadata:
     app.kubernetes.io/component: admission-controller
     app.kubernetes.io/instance: kyverno
     app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: kyverno-admission-controller
     app.kubernetes.io/part-of: kyverno
-    app.kubernetes.io/version: 3.6.0
-    helm.sh/chart: kyverno-3.6.0
+    app.kubernetes.io/version: 3.8.1
+    helm.sh/chart: kyverno-3.8.1
 spec:
   replicas: 3
   revisionHistoryLimit: 10
@@ -1825,10 +1882,13 @@ spec:
         app.kubernetes.io/component: admission-controller
         app.kubernetes.io/instance: kyverno
         app.kubernetes.io/managed-by: Helm
+        app.kubernetes.io/name: kyverno-admission-controller
         app.kubernetes.io/part-of: kyverno
-        app.kubernetes.io/version: 3.6.0
-        helm.sh/chart: kyverno-3.6.0
+        app.kubernetes.io/version: 3.8.1
+        helm.sh/chart: kyverno-3.8.1
     spec:
+      nodeSelector:
+        kubernetes.io/os: linux
       dnsPolicy: ClusterFirst
       affinity:
         podAntiAffinity:
@@ -1846,7 +1906,7 @@ spec:
       automountServiceAccountToken: true
       initContainers:
         - name: kyverno-pre
-          image: "reg.kyverno.io/kyverno/kyvernopre:v1.16.0"
+          image: "reg.kyverno.io/kyverno/kyvernopre:v1.18.1"
           imagePullPolicy: IfNotPresent
           args:
             - --loggingFormat=text
@@ -1866,7 +1926,9 @@ spec:
               - ALL
             privileged: false
             readOnlyRootFilesystem: true
+            runAsGroup: 65534
             runAsNonRoot: true
+            runAsUser: 65534
             seccompProfile:
               type: RuntimeDefault
           env:
@@ -1892,11 +1954,12 @@ spec:
             value: kyverno-svc
       containers:
         - name: kyverno
-          image: "reg.kyverno.io/kyverno/kyverno:v1.16.0"
+          image: "reg.kyverno.io/kyverno/kyverno:v1.18.1"
           imagePullPolicy: IfNotPresent
           args:
             - --caSecretName=kyverno-svc.kyverno.svc.kyverno-tls-ca
             - --tlsSecretName=kyverno-svc.kyverno.svc.kyverno-tls-pair
+            - --tlsKeyAlgorithm=RSA
             - --backgroundServiceAccountName=system:serviceaccount:kyverno:kyverno-background-controller
             - --reportsServiceAccountName=system:serviceaccount:kyverno:kyverno-reports-controller
             - --servicePort=443
@@ -1918,6 +1981,7 @@ spec:
             - --generateMutatingAdmissionPolicy=false
             - --dumpPatches=false
             - --maxAPICallResponseLength=2000000
+            - --apiCallTimeout=30s
             - --loggingFormat=text
             - --v=2
             - --enablePolicyException=false
@@ -1939,7 +2003,9 @@ spec:
               - ALL
             privileged: false
             readOnlyRootFilesystem: true
+            runAsGroup: 65534
             runAsNonRoot: true
+            runAsUser: 65534
             seccompProfile:
               type: RuntimeDefault
           ports:
@@ -2004,9 +2070,20 @@ spec:
           volumeMounts:
             - mountPath: /.sigstore
               name: sigstore
+            - name: apicall-token
+              mountPath: /var/run/secrets/kyverno/apicall
+              readOnly: true
       volumes:
       - name: sigstore
         emptyDir: {}
+      - name: apicall-token
+        projected:
+          defaultMode: 0444
+          sources:
+            - serviceAccountToken:
+                path: token
+                expirationSeconds: 3600
+                audience: kyverno-svc.kyverno.io
 ---
 # Source: kyverno/templates/background-controller/deployment.yaml
 apiVersion: apps/v1
@@ -2018,9 +2095,10 @@ metadata:
     app.kubernetes.io/component: background-controller
     app.kubernetes.io/instance: kyverno
     app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: kyverno-background-controller
     app.kubernetes.io/part-of: kyverno
-    app.kubernetes.io/version: 3.6.0
-    helm.sh/chart: kyverno-3.6.0
+    app.kubernetes.io/version: 3.8.1
+    helm.sh/chart: kyverno-3.8.1
 spec:
   replicas: 2
   revisionHistoryLimit: 10
@@ -2040,10 +2118,13 @@ spec:
         app.kubernetes.io/component: background-controller
         app.kubernetes.io/instance: kyverno
         app.kubernetes.io/managed-by: Helm
+        app.kubernetes.io/name: kyverno-background-controller
         app.kubernetes.io/part-of: kyverno
-        app.kubernetes.io/version: 3.6.0
-        helm.sh/chart: kyverno-3.6.0
+        app.kubernetes.io/version: 3.8.1
+        helm.sh/chart: kyverno-3.8.1
     spec:
+      nodeSelector:
+        kubernetes.io/os: linux
       dnsPolicy: ClusterFirst
       affinity:
         podAntiAffinity:
@@ -2061,7 +2142,7 @@ spec:
       automountServiceAccountToken: true
       containers:
         - name: controller
-          image: "reg.kyverno.io/kyverno/background-controller:v1.16.0"
+          image: "reg.kyverno.io/kyverno/background-controller:v1.18.1"
           imagePullPolicy: IfNotPresent
           ports:
           - containerPort: 9443
@@ -2077,8 +2158,10 @@ spec:
             - --metricsPort=8000
             - --resyncPeriod=15m
             - --enableConfigMapCaching=true
+            - --controllerRuntimeMetricsAddress=:8080
             - --enableDeferredLoading=true
             - --maxAPICallResponseLength=2000000
+            - --apiCallTimeout=30s
             - --loggingFormat=text
             - --v=2
             - --enablePolicyException=false
@@ -2114,9 +2197,24 @@ spec:
               - ALL
             privileged: false
             readOnlyRootFilesystem: true
+            runAsGroup: 65534
             runAsNonRoot: true
+            runAsUser: 65534
             seccompProfile:
               type: RuntimeDefault
+          volumeMounts:
+            - name: apicall-token
+              mountPath: /var/run/secrets/kyverno/apicall
+              readOnly: true
+      volumes:
+      - name: apicall-token
+        projected:
+          defaultMode: 0444
+          sources:
+            - serviceAccountToken:
+                path: token
+                expirationSeconds: 3600
+                audience: kyverno-svc.kyverno.io
 ---
 # Source: kyverno/templates/cleanup-controller/deployment.yaml
 apiVersion: apps/v1
@@ -2128,9 +2226,10 @@ metadata:
     app.kubernetes.io/component: cleanup-controller
     app.kubernetes.io/instance: kyverno
     app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: kyverno-cleanup-controller
     app.kubernetes.io/part-of: kyverno
-    app.kubernetes.io/version: 3.6.0
-    helm.sh/chart: kyverno-3.6.0
+    app.kubernetes.io/version: 3.8.1
+    helm.sh/chart: kyverno-3.8.1
 spec:
   replicas: 2
   revisionHistoryLimit: 10
@@ -2150,10 +2249,13 @@ spec:
         app.kubernetes.io/component: cleanup-controller
         app.kubernetes.io/instance: kyverno
         app.kubernetes.io/managed-by: Helm
+        app.kubernetes.io/name: kyverno-cleanup-controller
         app.kubernetes.io/part-of: kyverno
-        app.kubernetes.io/version: 3.6.0
-        helm.sh/chart: kyverno-3.6.0
+        app.kubernetes.io/version: 3.8.1
+        helm.sh/chart: kyverno-3.8.1
     spec:
+      nodeSelector:
+        kubernetes.io/os: linux
       dnsPolicy: ClusterFirst
       affinity:
         podAntiAffinity:
@@ -2171,7 +2273,7 @@ spec:
       automountServiceAccountToken: true
       containers:
         - name: controller
-          image: "reg.kyverno.io/kyverno/cleanup-controller:v1.16.0"
+          image: "reg.kyverno.io/kyverno/cleanup-controller:v1.18.1"
           imagePullPolicy: IfNotPresent
           ports:
           - containerPort: 9443
@@ -2184,6 +2286,7 @@ spec:
           args:
             - --caSecretName=kyverno-cleanup-controller.kyverno.svc.kyverno-tls-ca
             - --tlsSecretName=kyverno-cleanup-controller.kyverno.svc.kyverno-tls-pair
+            - --tlsKeyAlgorithm=RSA
             - --servicePort=443
             - --resyncPeriod=15m
             - --cleanupServerPort=9443
@@ -2193,6 +2296,7 @@ spec:
             - --enableDeferredLoading=true
             - --dumpPayload=false
             - --maxAPICallResponseLength=2000000
+            - --apiCallTimeout=30s
             - --loggingFormat=text
             - --v=2
             - --protectManagedResources=false
@@ -2232,7 +2336,9 @@ spec:
               - ALL
             privileged: false
             readOnlyRootFilesystem: true
+            runAsGroup: 65534
             runAsNonRoot: true
+            runAsUser: 65534
             seccompProfile:
               type: RuntimeDefault
           startupProbe:
@@ -2263,6 +2369,19 @@ spec:
             periodSeconds: 10
             successThreshold: 1
             timeoutSeconds: 5
+          volumeMounts:
+            - name: apicall-token
+              mountPath: /var/run/secrets/kyverno/apicall
+              readOnly: true
+      volumes:
+        - name: apicall-token
+          projected:
+            defaultMode: 0444
+            sources:
+              - serviceAccountToken:
+                  path: token
+                  expirationSeconds: 3600
+                  audience: kyverno-svc.kyverno.io
 ---
 # Source: kyverno/templates/reports-controller/deployment.yaml
 apiVersion: apps/v1
@@ -2274,9 +2393,10 @@ metadata:
     app.kubernetes.io/component: reports-controller
     app.kubernetes.io/instance: kyverno
     app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: kyverno-reports-controller
     app.kubernetes.io/part-of: kyverno
-    app.kubernetes.io/version: 3.6.0
-    helm.sh/chart: kyverno-3.6.0
+    app.kubernetes.io/version: 3.8.1
+    helm.sh/chart: kyverno-3.8.1
 spec:
   replicas: 2
   revisionHistoryLimit: 10
@@ -2296,10 +2416,13 @@ spec:
         app.kubernetes.io/component: reports-controller
         app.kubernetes.io/instance: kyverno
         app.kubernetes.io/managed-by: Helm
+        app.kubernetes.io/name: kyverno-reports-controller
         app.kubernetes.io/part-of: kyverno
-        app.kubernetes.io/version: 3.6.0
-        helm.sh/chart: kyverno-3.6.0
+        app.kubernetes.io/version: 3.8.1
+        helm.sh/chart: kyverno-3.8.1
     spec:
+      nodeSelector:
+        kubernetes.io/os: linux
       dnsPolicy: ClusterFirst
       affinity:
         podAntiAffinity:
@@ -2317,7 +2440,7 @@ spec:
       automountServiceAccountToken: true
       containers:
         - name: controller
-          image: "reg.kyverno.io/kyverno/reports-controller:v1.16.0"
+          image: "reg.kyverno.io/kyverno/reports-controller:v1.18.1"
           imagePullPolicy: IfNotPresent
           ports:
           - containerPort: 9443
@@ -2345,6 +2468,7 @@ spec:
             - --enableConfigMapCaching=true
             - --enableDeferredLoading=true
             - --maxAPICallResponseLength=2000000
+            - --apiCallTimeout=30s
             - --loggingFormat=text
             - --v=2
             - --enablePolicyException=false
@@ -2383,15 +2507,28 @@ spec:
               - ALL
             privileged: false
             readOnlyRootFilesystem: true
+            runAsGroup: 65534
             runAsNonRoot: true
+            runAsUser: 65534
             seccompProfile:
               type: RuntimeDefault
           volumeMounts:
             - mountPath: /.sigstore
               name: sigstore
+            - name: apicall-token
+              mountPath: /var/run/secrets/kyverno/apicall
+              readOnly: true
       volumes:
       - name: sigstore
         emptyDir: {}
+      - name: apicall-token
+        projected:
+          defaultMode: 0444
+          sources:
+            - serviceAccountToken:
+                path: token
+                expirationSeconds: 3600
+                audience: kyverno-svc.kyverno.io
 ---
 # Source: kyverno/templates/admission-controller/servicemonitor.yaml
 apiVersion: monitoring.coreos.com/v1
@@ -2403,9 +2540,10 @@ metadata:
     app.kubernetes.io/component: admission-controller
     app.kubernetes.io/instance: kyverno
     app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: kyverno-admission-controller
     app.kubernetes.io/part-of: kyverno
-    app.kubernetes.io/version: 3.6.0
-    helm.sh/chart: kyverno-3.6.0
+    app.kubernetes.io/version: 3.8.1
+    helm.sh/chart: kyverno-3.8.1
 spec:
   selector:
     matchLabels:
@@ -2430,9 +2568,10 @@ metadata:
     app.kubernetes.io/component: background-controller
     app.kubernetes.io/instance: kyverno
     app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: kyverno-background-controller
     app.kubernetes.io/part-of: kyverno
-    app.kubernetes.io/version: 3.6.0
-    helm.sh/chart: kyverno-3.6.0
+    app.kubernetes.io/version: 3.8.1
+    helm.sh/chart: kyverno-3.8.1
 spec:
   selector:
     matchLabels:
@@ -2457,9 +2596,10 @@ metadata:
     app.kubernetes.io/component: cleanup-controller
     app.kubernetes.io/instance: kyverno
     app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: kyverno-cleanup-controller
     app.kubernetes.io/part-of: kyverno
-    app.kubernetes.io/version: 3.6.0
-    helm.sh/chart: kyverno-3.6.0
+    app.kubernetes.io/version: 3.8.1
+    helm.sh/chart: kyverno-3.8.1
 spec:
   selector:
     matchLabels:
@@ -2484,9 +2624,10 @@ metadata:
     app.kubernetes.io/component: reports-controller
     app.kubernetes.io/instance: kyverno
     app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: kyverno-reports-controller
     app.kubernetes.io/part-of: kyverno
-    app.kubernetes.io/version: 3.6.0
-    helm.sh/chart: kyverno-3.6.0
+    app.kubernetes.io/version: 3.8.1
+    helm.sh/chart: kyverno-3.8.1
 spec:
   selector:
     matchLabels:
