@@ -37,7 +37,7 @@ webhooks:
     operations:
     - CREATE
     - UPDATE
-    # Uncomment the following line and line 41 if you want to use the namespace protection rule.
+    # Uncomment the following line and line 88 if you want to use the namespace protection rule.
     # - DELETE
     resources:
     - '*'
