@@ -60,7 +60,7 @@ Check the [compatibility matrix][compatibility-matrix] for additional informatio
 
 ### Configuration
 
-The module is deployed with sensible defaults. Configuration is **optional**: you can choose the policy engine and customize its packages under `spec.distribution.modules.policy` in your `furyctl.yaml`. If you omit the block, the defaults are applied.
+You configure the module under `spec.distribution.modules.policy` in your `furyctl.yaml`. The `type` field selects the policy engine to deploy: `gatekeeper`, `kyverno`, or `none` to disable the module. The other fields are optional and fall back to sensible defaults.
 
 ```yaml
 apiVersion: kfd.sighup.io/v1alpha2
