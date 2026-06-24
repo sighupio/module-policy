@@ -1,59 +1,47 @@
 # Kyverno
 
-<!-- <KFD-DOCS> -->
+<!-- <SD-DOCS> -->
 
-Kyverno is a policy engine designed for Kubernetes. It can validate, mutate, and generate configurations using admission controls and background scans. Kyverno policies are Kubernetes resources and do not require learning a new language. Kyverno is designed to work nicely with tools you already use like kubectl, kustomize, and Git.
+## Overview
 
-## Requirements
+Kyverno is a policy engine designed for Kubernetes. It can validate, mutate and generate configurations using admission controls and background scans. Kyverno policies are Kubernetes resources and do not require learning a new language. In the Policy Module it is one of the two selectable policy engines, deployed in HA mode and excluding the SD `infra` namespaces from its webhooks by default.
 
-- Kubernetes >= `1.25.0`
-- Kustomize >= `v3.5.3`
+This package ships a set of predefined policies that form the SD baseline, similar to what is provided with the Gatekeeper package:
 
-## Image repositories
+| Policy                         | Description                                                                                                                                  |
+| ------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------- |
+| disallow-capabilities-strict   | Adding capabilities other than `NET_BIND_SERVICE` is disallowed; all containers must explicitly drop `ALL` capabilities.                    |
+| disallow-capabilities          | Adding capabilities beyond those listed in the policy is disallowed.                                                                         |
+| disallow-host-namespaces       | Pods should not be allowed access to host namespaces (PID, IPC, network).                                                                   |
+| disallow-host-path             | Ensures no `hostPath` volumes are in use.                                                                                                    |
+| disallow-host-ports            | Ensures the `hostPort` field is unset or set to `0`.                                                                                        |
+| disallow-latest-tag            | Validates that images specify a tag and that it is not `latest`.                                                                            |
+| disallow-privilege-escalation  | Ensures the `allowPrivilegeEscalation` field is set to `false`.                                                                             |
+| disallow-privileged-containers | Ensures Pods do not run in privileged mode.                                                                                                  |
+| disallow-proc-mount            | Ensures nothing but the default `procMount` can be specified.                                                                               |
+| require-pod-probes             | Liveness and readiness probes must be configured.                                                                                           |
+| require-run-as-nonroot         | Ensures `runAsNonRoot` is set to `true`.                                                                                                    |
+| restrict-sysctls               | Disallows sysctls except for an allowed "safe" subset.                                                                                       |
+| unique-ingress-host-and-path   | Ensures Ingresses are globally unique with respect to the host plus path combination.                                                       |
 
-- registry.sighup.io/fury/kyverno/kyverno
-- registry.sighup.io/fury/kyverno/kyvernopre
-- registry.sighup.io/fury/kyverno/background-controller
-- registry.sighup.io/fury/kyverno/cleanup-controller
-- registry.sighup.io/fury/kyverno/reports-controller
-- registry.sighup.io/fury/bitnami/kubectl
+## Upstream project
 
-## Configuration
-
-Kyverno is deployed in HA mode, and whitelists the SD `infra` namespaces by default on the webhooks.
-
-## Pre-configured policies
-
-This package comes with a set of predefined policies from the main kyverno repository. These policies are our own SD baseline, and are similar to what is provided with the Gatekeeper package.
-
-| Policy                         | Description                                                                                                                                                                                                                                                                                                                          |
-| ------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| disallow-capabilities-strict   | Adding capabilities other than `NET_BIND_SERVICE` is disallowed. In addition, all containers must explicitly drop `ALL` capabilities.                                                                                                                                                                                                |
-| disallow-capabilities          | Adding capabilities beyond those listed in the policy must be disallowed.                                                                                                                                                                                                                                                            |
-| disallow-host-namespaces       | Host namespaces (Process ID namespace, Inter-Process Communication namespace, and network namespace) allow access to shared information and can be used to elevate privileges. Pods should not be allowed access to host namespaces. This policy ensures fields which make use of these host namespaces are unset or set to `false`. |
-| disallow-host-path             | HostPath volumes let Pods use host directories and volumes in containers. Using host resources can be used to access shared data or escalate privileges and should not be allowed. This policy ensures no hostPath volumes are in use.                                                                                               |
-| disallow-host-ports            | Access to host ports allows potential snooping of network traffic and should not be allowed, or at minimum restricted to a known list. This policy ensures the `hostPort` field is unset or set to `0`.                                                                                                                              |
-| disallow-latest-tag            | The ':latest' tag is mutable and can lead to unexpected errors if the image changes. A best practice is to use an immutable tag that maps to a specific version of an application Pod. This policy validates that the image specifies a tag and that it is not called `latest`.                                                      |
-| disallow-privilege-escalation  | Privilege escalation, such as via set-user-ID or set-group-ID file mode, should not be allowed. This policy ensures the `allowPrivilegeEscalation` field is set to `false`.                                                                                                                                                          |
-| disallow-privileged-containers | Privileged mode disables most security mechanisms and must not be allowed. This policy ensures Pods do not call for privileged mode.                                                                                                                                                                                                 |
-| disallow-proc-mount            | The default /proc masks are set up to reduce attack surface and should be required. This policy ensures nothing but the default procMount can be specified.                                                                                                                                                                          |
-| require-pod-probes             | Liveness and readiness probes need to be configured to correctly manage a Pod's lifecycle during deployments, restarts, and upgrades.                                                                                                                                                                                                |
-| require-run-as-nonroot         | Containers must be required to run as non-root users. This policy ensures `runAsNonRoot` is set to `true`. 2.                                                                                                                                                                                                                        |
-| restrict-sysctls               | Sysctls can disable security mechanisms or affect all containers on a host, and should be disallowed except for an allowed "safe" subset.                                                                                                                                                                                            |
-| unique-ingress-host-and-path   | This policy ensures that no Ingress can be created or updated unless it is globally unique with respect to host plus path  combination.                                                                                                                                                                                              |
+This package is based on the upstream [Kyverno][kyverno-github].
 
 ## Deployment
 
-You can deploy kyverno by running the following command in the root of
-the project:
+This package is deployed as part of **Policy Module** when you create a cluster with `furyctl` and `spec.distribution.modules.policy.type` is set to `kyverno`.
 
-```shell
-kustomize build | kubectl apply --server-side -f -
-```
+You can control whether the default policies are installed and customize enforcement under `spec.distribution.modules.policy.kyverno` in your `furyctl.yaml`. See the [module documentation](../../README.md) and the configuration reference ([EKSCluster][schema-reference-eks], [KFDDistribution][schema-reference-kfd], [OnPremises][schema-reference-onprem]) for the available options.
 
 <!-- Links -->
 
-<!-- </KFD-DOCS> -->
+[kyverno-github]: https://github.com/kyverno/kyverno
+[schema-reference-eks]: https://docs.sighup.io/docs/reference/ekscluster#specdistributionmodulespolicy
+[schema-reference-kfd]: https://docs.sighup.io/docs/reference/kfddistribution#specdistributionmodulespolicy
+[schema-reference-onprem]: https://docs.sighup.io/docs/reference/onpremises#specdistributionmodulespolicy
+
+<!-- </SD-DOCS> -->
 
 ## License
 

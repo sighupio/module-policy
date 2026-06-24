@@ -1,133 +1,37 @@
 # Gatekeeper
 
-<!-- <KFD-DOCS> -->
+<!-- <SD-DOCS> -->
 
-## Requirements
+## Overview
 
-Minimum Kubernetes version `>=v1.18` with the API server `ValidatingAdmissionWebhook` plugin enabled.
+Gatekeeper is a Kubernetes-native policy engine, built on top of the Open Policy Agent (OPA), that runs as a Validating Admission Webhook to enforce policies (constraints) at runtime. In the Policy Module it is one of the two selectable policy engines and ships with a set of SIGHUP base constraints, a monitoring integration and the Gatekeeper Policy Manager web UI.
 
-Gatekeeper core package gets deployed by default with the following resource limits:
+This directory groups the Gatekeeper packages:
 
-- CPU: 1000m
-- Memory: 512Mi
+- [`core`](core) — the Gatekeeper deployment, ready to enforce rules.
+- [`rules`](rules) — the SIGHUP base set of `ConstraintTemplates` and `Constraints`.
+- [`monitoring`](monitoring) — `ServiceMonitor`, Prometheus rules and Grafana dashboard.
+- [`gpm`](gpm) — Gatekeeper Policy Manager, a read-only web UI for Gatekeeper.
 
-Gatekeeper Policy Manager package gets deployed by default with the following resource limits:
+## Upstream project
 
-- CPU: 500m
-- Memory: 256Mi
+This package is based on the upstream [Gatekeeper][gatekeeper-github].
 
-## Fury Setup
+## Deployment
 
-This module can easily be added to your existing Fury setup adding to your `Furyfile.yml`:
+This package is deployed as part of **Policy Module** when you create a cluster with `furyctl` and `spec.distribution.modules.policy.type` is set to `gatekeeper`.
 
-```yaml
-bases:
-  (...)
-  - name: opa/gatekeeper
-    version: "v1.16.0"
-```
-
-Once you'll do this, you can then proceed to integrate Gatekeeper into your Kustomize project.
-
-### Disable constraints
-
-If you need to disable already existing constraints that are usually enabled by default,
-you can just simply create a patch in Kustomize like the following one:
-
-```yaml
-patchesJson6902:
-    - target:
-          group: constraints.gatekeeper.sh
-          version: v1beta1
-          kind: K8sUniqueIngressHost # is just an example of already enabled constraints
-          name: unique-ingress-host
-      path: patches/dryrun.yml
-```
-
-in the `patches/allow.yml`:
-
-```yaml
-- op: "replace"
-  path: "/spec/enforcementAction"
-  value: "dryrun"
-```
-
-### Exclude namespaces from gatekeeper constraints
-
-There are already a bunch of namespaces excluded by default by the rules of Gatekeeper, that are the ones
-used by infra namespaces *(logging, monitoring, kube-system, ingress-nginx)*. If this subset must be modified for whatever
-reason, you can just do it with a kustomize path like the following one:
-
-```yaml
-patchesJson6902:
-    - target:
-          group: constraints.gatekeeper.sh
-          version: v1beta1
-          kind: K8sUniqueIngressHost # is just an example of already enabled constraints
-          name: unique-ingress-host
-      path: patches/ns.yml
-```
-
-in the `patches/allow.yml`:
-
-```yaml
-- op: "replace"
-  path: "/spec/match/excludedNamespaces"
-  value:
-      - my-ns-1
-      - my-ns-2
-      - my-ns-3
-      - my-ns-4
-```
-
-### The naming of Constraints and ConstraintTemplates
-
-To be more explicit, it is useful to give a verbose name to constraints, such as `all_pod_must_have_gatekeeper_namespaceselector.yml`.
-In this way, the scope of the constraint that is going to be applied will be crystal clear.
-
-For the `ConstraintTemplate` (that is the general logic — a function basically —) could be reasonable to have something
-like: `k8srequiredlabels_template.yml`
-
-#### Uninstall Constraints
-
-To uninstall rules you first need to remove the `Constraint`, then the `constraintTemplate`:
-
-here is an example of the following resource:
-
-```bash
-kubectl delete crd k8scontainerlimits.constraints.gatekeeper.sh # this will remove the constraint
-kubectl delete constrainttemplates.templates.gatekeeper.sh k8scontainerlimits # this will remove the constraintTemplate
-```
-
-### Modify constraintTemplates rules (securityControls)
-
-There is a `constraintTemplate` *(`securityControl`)* that enables only a few subsets of the available rules, basically
-because there are a lot of rules that require pretty much effort to achieve them. If you want to enable them, you can
-just make a patch with kustomize (following the examples above) and enable a part or all of them
-(you can find them here: [security_controls_template.yml](rules/templates/security_controls_template.yml)
-
-## Uninstallation
-
-Before uninstalling Gatekeeper, be sure to clean up old `Constraints`, `ConstraintTemplates`, and
-the `Config` resource in the `gatekeeper-system` namespace. This will make sure all finalizers
-are removed by Gatekeeper. Otherwise, the finalizers will need to be removed manually.
-
-### Before Uninstall, Clean Up Old Constraints
-
-Currently, the uninstallation mechanism only removes the Gatekeeper system,
-it does not remove any `ConstraintTemplate`, `Constraint`, and `Config` resources that have been created by the user,
-nor does it remove their accompanying `CRDs`.
-
-When Gatekeeper is running it is possible to remove unwanted constraints by:
-
-- Deleting all instances of the constraint resource.
-- Deleting the `ConstraintTemplate` resource, which should automatically clean up the `CRD`.
-- Deleting the `Config` resource removes finalizers on synced resources.
-
-For more details please refer to [Gatekeeper's official repository][gatekeeper-repo] and the [official Gatekeeper documentation site][gatekeeper-docs].
+You can customize it under `spec.distribution.modules.policy.gatekeeper` in your `furyctl.yaml`. See the [module documentation](../../README.md) and the configuration reference ([EKSCluster][schema-reference-eks], [KFDDistribution][schema-reference-kfd], [OnPremises][schema-reference-onprem]) for the available options.
 
 <!-- Links -->
-[gatekeeper-repo]: https://github.com/open-policy-agent/gatekeeper
-[gatekeeper-docs]: https://open-policy-agent.github.io/gatekeeper/website/docs/
 
-<!-- </KFD-DOCS> -->
+[gatekeeper-github]: https://github.com/open-policy-agent/gatekeeper
+[schema-reference-eks]: https://docs.sighup.io/docs/reference/ekscluster#specdistributionmodulespolicy
+[schema-reference-kfd]: https://docs.sighup.io/docs/reference/kfddistribution#specdistributionmodulespolicy
+[schema-reference-onprem]: https://docs.sighup.io/docs/reference/onpremises#specdistributionmodulespolicy
+
+<!-- </SD-DOCS> -->
+
+## License
+
+For license details please see [LICENSE](../../LICENSE)
