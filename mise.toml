@@ -3,11 +3,12 @@
 # license that can be found in the LICENSE file.
 
 [tools]
-kind = "0.31.0"
-kubectl = "1.35.5"
-kustomize = "5.6.0"
 bats = "1.11.0"
-drone = "latest"
+drone = "1.9.0"
+kind = "0.31.0"
+kube-linter = "0.8.3"
+kubectl = "1.35.6"
+kustomize = "5.6.0"
 "ubi:google/addlicense" = "v1.1.1"
 
 # Development task definitions
@@ -19,6 +20,14 @@ addlicense -c "SIGHUP s.r.l" -y "2017-present" -v -l bsd .
 echo "✅ License headers added!"
 '''
 
+[tasks.check-license]
+description = "Check that all files have license headers"
+run = '''
+echo "🔍 Checking license headers..."
+addlicense -c "SIGHUP s.r.l" -y "2017-present" -v -l bsd --check .
+echo "✅ All files have license headers!"
+'''
+
 [tasks.validate-manifests]
 description = "Validate all manifests can be built"
 run = '''
@@ -28,9 +37,10 @@ kustomize build katalog/kyverno > /dev/null && echo "  ✅ kyverno"
 echo "✅ All manifests validated!"
 '''
 
-[tasks.setup]
-description = "Complete development environment setup"
-depends = ["add-license", "validate-manifests"]
+[tasks.lint]
+description = "Lint all katalog manifests with kube-linter"
 run = '''
-echo "✅ Development environment ready!"
+echo "🔍 Linting katalog/ with kube-linter..."
+kube-linter lint --config .kube-linter.yaml katalog/
+echo "✅ All manifests passed linting!"
 '''
