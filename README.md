@@ -36,7 +36,7 @@ The following packages are included in Policy Module:
 
 | Package                                                | Version   | Description                                                                                                                                              |
 | ------------------------------------------------------ | --------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| [Gatekeeper Core](katalog/gatekeeper/core)             | `v3.22.2` | Gatekeeper deployment, ready to enforce rules.                                                                                                          |
+| [Gatekeeper Core](katalog/gatekeeper/core)             | `v3.23.1` | Gatekeeper deployment, ready to enforce rules.                                                                                                          |
 | [Gatekeeper Rules](katalog/gatekeeper/rules)           | `N.A.`    | A set of custom rules to get started with policy enforcement.                                                                                           |
 | [Gatekeeper Monitoring](katalog/gatekeeper/monitoring) | `N.A.`    | Metrics, alerts and dashboard for monitoring Gatekeeper.                                                                                                |
 | [Gatekeeper Policy Manager](katalog/gatekeeper/gpm)    | `v1.1.1`  | Gatekeeper Policy Manager, a simple to use web UI for Gatekeeper.                                                                                       |
