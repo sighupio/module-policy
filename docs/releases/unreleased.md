@@ -6,7 +6,7 @@ Welcome to the latest release of `Policy` module of [SIGHUP Distribution](https:
 
 | Component                   | Supported Version                                                                     | Previous Version |
 | --------------------------- | ------------------------------------------------------------------------------------- | ---------------- |
-| `gatekeeper`                | [`v3.22.2`](https://github.com/open-policy-agent/gatekeeper/releases/tag/v3.22.2)     | `v3.22.2`        |
+| `gatekeeper`                | [`v3.23.1`](https://github.com/open-policy-agent/gatekeeper/releases/tag/v3.23.1)     | `v3.22.2`        |
 | `gatekeeper-policy-manager` | [`v1.1.1`](https://github.com/sighupio/gatekeeper-policy-manager/releases/tag/v1.1.1) | `v1.1.1`         |
 | `kyverno`                   | [`v1.18.1`](https://github.com/kyverno/kyverno/releases/tag/v1.18.1)                  | `v1.18.1`        |
 
