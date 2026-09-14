@@ -3,12 +3,14 @@
 # license that can be found in the LICENSE file.
 
 [tools]
-bats = "1.11.0"
+bats = "1.14.0"
 drone = "1.9.0"
-kind = "0.31.0"
+helm = "3.21.2"
+kind = "0.33.0"
 kube-linter = "0.8.3"
-kubectl = "1.35.6"
+kubectl = "1.36.4"
 kustomize = "5.6.0"
+yq = "4.53.6"
 "ubi:google/addlicense" = "v1.1.1"
 
 # Development task definitions
