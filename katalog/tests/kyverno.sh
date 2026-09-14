@@ -12,8 +12,8 @@ set -o pipefail
 @test "Deploy Kyverno" {
   info
   deploy() {
-    kubectl apply -f 'https://raw.githubusercontent.com/sighupio/fury-kubernetes-monitoring/v3.3.1/katalog/prometheus-operator/crds/0servicemonitorCustomResourceDefinition.yaml'
-    kubectl apply -f 'https://raw.githubusercontent.com/sighupio/fury-kubernetes-monitoring/v3.3.1/katalog/prometheus-operator/crds/0prometheusruleCustomResourceDefinition.yaml'
+    kubectl apply -f 'https://raw.githubusercontent.com/sighupio/module-monitoring/refs/tags/v4.2.0/katalog/prometheus-operator/crds/0servicemonitorCustomResourceDefinition.yaml'
+    kubectl apply -f 'https://raw.githubusercontent.com/sighupio/module-monitoring/refs/tags/v4.2.0/katalog/prometheus-operator/crds/0prometheusruleCustomResourceDefinition.yaml'
     # Ensure monitoring CRDs are established before applying resources that use them
     kubectl wait --for=condition=Established \
       crd/servicemonitors.monitoring.coreos.com \
