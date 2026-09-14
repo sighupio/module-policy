@@ -6,15 +6,15 @@ Welcome to the latest release of `Policy` module of [SIGHUP Distribution](https:
 
 | Component                   | Supported Version                                                                     | Previous Version |
 | --------------------------- | ------------------------------------------------------------------------------------- | ---------------- |
-| `gatekeeper`                | [`v3.23.1`](https://github.com/open-policy-agent/gatekeeper/releases/tag/v3.23.1)     | `v3.22.2`        |
-| `gatekeeper-policy-manager` | [`v1.1.1`](https://github.com/sighupio/gatekeeper-policy-manager/releases/tag/v1.1.1) | `v1.1.1`         |
-| `kyverno`                   | [`v1.19.1`](https://github.com/kyverno/kyverno/releases/tag/v1.19.1)                  | `v1.18.1`        |
+| `gatekeeper`                | [`v3.23.1`](https://github.com/open-policy-agent/gatekeeper/releases/tag/v3.23.1)     | `v3.23.1`        |
+| `gatekeeper-policy-manager` | [`v1.1.1`](https://github.com/sighupio/gatekeeper-policy-manager/releases/tag/v1.1.1) | `No Update`      |
+| `kyverno`                   | [`v1.19.1`](https://github.com/kyverno/kyverno/releases/tag/v1.19.1)                  | `v1.19.1`        |
 
 > Please refer the individual release notes to get a detailed information on each release.
 
 ## Compatibility
 
-This release adds support for Kubernetes 1.36.x while maintaining compatibility with versions 1.33.x through 1.35.x.
+This release maintains compatibility with Kubernetes versions 1.33.x through 1.36.x.
 
 ## Update Guide 🦮
 
