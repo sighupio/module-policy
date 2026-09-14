@@ -2,6 +2,18 @@
 # Use of this source code is governed by a BSD-style
 # license that can be found in the LICENSE file.
 
+# NOTE: MISE_DATA_DIR points at a shared host volume (/root/mise_data_dir) and the E2E
+# pipelines below all depend on `validate`, so they start together and several containers can
+# cold-install the same tool version into that volume simultaneously. mise's install is not
+# atomic against other processes on the same volume, so concurrent installs corrupt each
+# other: the download lands at a size that does not match the expected one (varying, larger
+# than expected), or the version directory becomes visible before extraction finishes and a
+# racing container then fails with "No executable found for configured tool". Installs are
+# therefore serialized per runner with flock on /mise-data/.mise-install.lock. The lock is
+# held on a file descriptor, so the kernel releases it even if a container is killed
+# mid-install. Do not "fix" this with a force-reinstall flag: it makes the race worse and
+# cancels out cache pre-warming.
+
 name: Check License Header Presence
 kind: pipeline
 type: docker
@@ -153,7 +165,7 @@ steps:
         path: /mise-data
     commands:
       - |-
-        mise use kind@$${KIND_VERSION} kubectl@$${KUBECTL_VERSION}
+        flock -w 600 /mise-data/.mise-install.lock mise use kind@$${KIND_VERSION} kubectl@$${KUBECTL_VERSION}
         eval "$(mise activate bash --shims)"
       # NOTE: kind's `--wait` flag that waits for the control-plane to be ready
       # does not work when disabling the default CNI. It will always go in timeout.
@@ -174,7 +186,7 @@ steps:
         path: /mise-data
     commands:
       - |-
-        mise use bats@$${BATS_VERSION} kubectl@$${KUBECTL_VERSION} kustomize@$${KUSTOMIZE_VERSION}
+        flock -w 600 /mise-data/.mise-install.lock mise use bats@$${BATS_VERSION} kubectl@$${KUBECTL_VERSION} kustomize@$${KUSTOMIZE_VERSION}
         eval "$(mise activate bash --shims)"
       # wait for Kind cluster to be ready
       - until kubectl get serviceaccount default > /dev/null 2>&1; do echo "waiting for control-plane" && sleep 1; done
@@ -189,7 +201,7 @@ steps:
         path: /mise-data
     commands:
       - |-
-        mise use kind@$${KIND_VERSION}
+        flock -w 600 /mise-data/.mise-install.lock mise use kind@$${KIND_VERSION}
         eval "$(mise activate bash --shims)"
       # does not matter if the command fails
       - kind delete cluster --name $${GATEKEEPER_CLUSTER_NAME} || true
@@ -261,7 +273,7 @@ steps:
         path: /mise-data
     commands:
       - |-
-        mise use kind@$${KIND_VERSION} kubectl@$${KUBECTL_VERSION}
+        flock -w 600 /mise-data/.mise-install.lock mise use kind@$${KIND_VERSION} kubectl@$${KUBECTL_VERSION}
         eval "$(mise activate bash --shims)"
       # NOTE: kind's `--wait` flag that waits for the control-plane to be ready
       # does not work when disabling the default CNI. It will always go in timeout.
@@ -282,7 +294,7 @@ steps:
         path: /mise-data
     commands:
       - |-
-        mise use bats@$${BATS_VERSION} kubectl@$${KUBECTL_VERSION} kustomize@$${KUSTOMIZE_VERSION}
+        flock -w 600 /mise-data/.mise-install.lock mise use bats@$${BATS_VERSION} kubectl@$${KUBECTL_VERSION} kustomize@$${KUSTOMIZE_VERSION}
         eval "$(mise activate bash --shims)"
       # wait for Kind cluster to be ready
       - until kubectl get serviceaccount default > /dev/null 2>&1; do echo "waiting for control-plane" && sleep 1; done
@@ -297,7 +309,7 @@ steps:
         path: /mise-data
     commands:
       - |-
-        mise use kind@$${KIND_VERSION}
+        flock -w 600 /mise-data/.mise-install.lock mise use kind@$${KIND_VERSION}
         eval "$(mise activate bash --shims)"
       # does not matter if the command fails
       - kind delete cluster --name $${KYVERNO_CLUSTER_NAME} || true
@@ -369,7 +381,7 @@ steps:
         path: /mise-data
     commands:
       - |-
-        mise use kind@$${KIND_VERSION} kubectl@$${KUBECTL_VERSION}
+        flock -w 600 /mise-data/.mise-install.lock mise use kind@$${KIND_VERSION} kubectl@$${KUBECTL_VERSION}
         eval "$(mise activate bash --shims)"
       # NOTE: kind's `--wait` flag that waits for the control-plane to be ready
       # does not work when disabling the default CNI. It will always go in timeout.
@@ -390,7 +402,7 @@ steps:
         path: /mise-data
     commands:
       - |-
-        mise use bats@$${BATS_VERSION} kubectl@$${KUBECTL_VERSION} kustomize@$${KUSTOMIZE_VERSION}
+        flock -w 600 /mise-data/.mise-install.lock mise use bats@$${BATS_VERSION} kubectl@$${KUBECTL_VERSION} kustomize@$${KUSTOMIZE_VERSION}
         eval "$(mise activate bash --shims)"
       # wait for Kind cluster to be ready
       - until kubectl get serviceaccount default > /dev/null 2>&1; do echo "waiting for control-plane" && sleep 1; done
@@ -405,7 +417,7 @@ steps:
         path: /mise-data
     commands:
       - |-
-        mise use kind@$${KIND_VERSION}
+        flock -w 600 /mise-data/.mise-install.lock mise use kind@$${KIND_VERSION}
         eval "$(mise activate bash --shims)"
       # does not matter if the command fails
       - kind delete cluster --name $${GATEKEEPER_CLUSTER_NAME} || true
@@ -477,7 +489,7 @@ steps:
         path: /mise-data
     commands:
       - |-
-        mise use kind@$${KIND_VERSION} kubectl@$${KUBECTL_VERSION}
+        flock -w 600 /mise-data/.mise-install.lock mise use kind@$${KIND_VERSION} kubectl@$${KUBECTL_VERSION}
         eval "$(mise activate bash --shims)"
       # NOTE: kind's `--wait` flag that waits for the control-plane to be ready
       # does not work when disabling the default CNI. It will always go in timeout.
@@ -498,7 +510,7 @@ steps:
         path: /mise-data
     commands:
       - |-
-        mise use bats@$${BATS_VERSION} kubectl@$${KUBECTL_VERSION} kustomize@$${KUSTOMIZE_VERSION}
+        flock -w 600 /mise-data/.mise-install.lock mise use bats@$${BATS_VERSION} kubectl@$${KUBECTL_VERSION} kustomize@$${KUSTOMIZE_VERSION}
         eval "$(mise activate bash --shims)"
       # wait for Kind cluster to be ready
       - until kubectl get serviceaccount default > /dev/null 2>&1; do echo "waiting for control-plane" && sleep 1; done
@@ -513,7 +525,7 @@ steps:
         path: /mise-data
     commands:
       - |-
-        mise use kind@$${KIND_VERSION}
+        flock -w 600 /mise-data/.mise-install.lock mise use kind@$${KIND_VERSION}
         eval "$(mise activate bash --shims)"
       # does not matter if the command fails
       - kind delete cluster --name $${KYVERNO_CLUSTER_NAME} || true
@@ -585,7 +597,7 @@ steps:
         path: /mise-data
     commands:
       - |-
-        mise use kind@$${KIND_VERSION} kubectl@$${KUBECTL_VERSION}
+        flock -w 600 /mise-data/.mise-install.lock mise use kind@$${KIND_VERSION} kubectl@$${KUBECTL_VERSION}
         eval "$(mise activate bash --shims)"
       # NOTE: kind's `--wait` flag that waits for the control-plane to be ready
       # does not work when disabling the default CNI. It will always go in timeout.
@@ -606,7 +618,7 @@ steps:
         path: /mise-data
     commands:
       - |-
-        mise use bats@$${BATS_VERSION} kubectl@$${KUBECTL_VERSION} kustomize@$${KUSTOMIZE_VERSION}
+        flock -w 600 /mise-data/.mise-install.lock mise use bats@$${BATS_VERSION} kubectl@$${KUBECTL_VERSION} kustomize@$${KUSTOMIZE_VERSION}
         eval "$(mise activate bash --shims)"
       # wait for Kind cluster to be ready
       - until kubectl get serviceaccount default > /dev/null 2>&1; do echo "waiting for control-plane" && sleep 1; done
@@ -621,7 +633,7 @@ steps:
         path: /mise-data
     commands:
       - |-
-        mise use kind@$${KIND_VERSION}
+        flock -w 600 /mise-data/.mise-install.lock mise use kind@$${KIND_VERSION}
         eval "$(mise activate bash --shims)"
       # does not matter if the command fails
       - kind delete cluster --name $${GATEKEEPER_CLUSTER_NAME} || true
@@ -693,7 +705,7 @@ steps:
         path: /mise-data
     commands:
       - |-
-        mise use kind@$${KIND_VERSION} kubectl@$${KUBECTL_VERSION}
+        flock -w 600 /mise-data/.mise-install.lock mise use kind@$${KIND_VERSION} kubectl@$${KUBECTL_VERSION}
         eval "$(mise activate bash --shims)"
       # NOTE: kind's `--wait` flag that waits for the control-plane to be ready
       # does not work when disabling the default CNI. It will always go in timeout.
@@ -714,7 +726,7 @@ steps:
         path: /mise-data
     commands:
       - |-
-        mise use bats@$${BATS_VERSION} kubectl@$${KUBECTL_VERSION} kustomize@$${KUSTOMIZE_VERSION}
+        flock -w 600 /mise-data/.mise-install.lock mise use bats@$${BATS_VERSION} kubectl@$${KUBECTL_VERSION} kustomize@$${KUSTOMIZE_VERSION}
         eval "$(mise activate bash --shims)"
       # wait for Kind cluster to be ready
       - until kubectl get serviceaccount default > /dev/null 2>&1; do echo "waiting for control-plane" && sleep 1; done
@@ -729,7 +741,7 @@ steps:
         path: /mise-data
     commands:
       - |-
-        mise use kind@$${KIND_VERSION}
+        flock -w 600 /mise-data/.mise-install.lock mise use kind@$${KIND_VERSION}
         eval "$(mise activate bash --shims)"
       # does not matter if the command fails
       - kind delete cluster --name $${KYVERNO_CLUSTER_NAME} || true
