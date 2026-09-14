@@ -13,7 +13,7 @@ volumes:
       path: /root/mise_data_dir
 steps:
   - name: check
-    image: quay.io/sighup/mise:v2026.6.14
+    image: quay.io/sighup/mise:v2026.8.6
     pull: always
     environment:
       MISE_DATA_DIR: /mise-data
@@ -46,7 +46,7 @@ environment:
 
 steps:
   - name: render
-    image: quay.io/sighup/mise:v2025.4.4
+    image: quay.io/sighup/mise:v2026.8.6
     pull: always
     depends_on:
       - clone
@@ -62,7 +62,7 @@ steps:
       - kustomize build katalog/kyverno > kyverno.yml
 
   - name: lint
-    image: quay.io/sighup/mise:v2026.6.14
+    image: quay.io/sighup/mise:v2026.8.6
     pull: always
     environment:
       MISE_DATA_DIR: /mise-data
@@ -129,7 +129,7 @@ environment:
   # Tool versions.
   KIND_VERSION: "0.30.0"
   KUBECTL_VERSION: "v1.33.2"
-  BATS_VERSION: "1.1.0"
+  BATS_VERSION: "1.14.0"
   KUSTOMIZE_VERSION: "5.6.0"
 
 trigger:
@@ -139,7 +139,7 @@ trigger:
 
 steps:
   - name: Create Kind Cluster for Gatekeeper
-    image: quay.io/sighup/mise:v2025.4.4
+    image: quay.io/sighup/mise:v2026.8.6
     pull: always
     depends_on:
       - clone
@@ -162,7 +162,7 @@ steps:
       - kind get kubeconfig --name $${GATEKEEPER_CLUSTER_NAME} > $${KUBECONFIG}
 
   - name: Gatekeeper End-to-End Tests
-    image: quay.io/sighup/mise:v2025.4.4
+    image: quay.io/sighup/mise:v2026.8.6
     pull: always
     network_mode: host
     depends_on:
@@ -181,7 +181,7 @@ steps:
       - bats -t katalog/tests/gatekeeper.sh
 
   - name: Destroy Kind Cluster for Gatekeeper
-    image: quay.io/sighup/mise:v2025.4.4
+    image: quay.io/sighup/mise:v2026.8.6
     volumes:
       - name: dockersock
         path: /var/run/docker.sock
@@ -237,7 +237,7 @@ environment:
   # Tool versions.
   KIND_VERSION: "0.30.0"
   KUBECTL_VERSION: "v1.33.2"
-  BATS_VERSION: "1.1.0"
+  BATS_VERSION: "1.14.0"
   KUSTOMIZE_VERSION: "5.6.0"
 
 trigger:
@@ -247,7 +247,7 @@ trigger:
 
 steps:
   - name: Create Kind Cluster for Kyverno
-    image: quay.io/sighup/mise:v2025.4.4
+    image: quay.io/sighup/mise:v2026.8.6
     pull: always
     depends_on:
       - clone
@@ -270,7 +270,7 @@ steps:
       - kind get kubeconfig --name $${KYVERNO_CLUSTER_NAME} > $${KUBECONFIG}
 
   - name: Kyverno End-to-End Tests
-    image: quay.io/sighup/mise:v2025.4.4
+    image: quay.io/sighup/mise:v2026.8.6
     pull: always
     network_mode: host
     depends_on:
@@ -289,7 +289,7 @@ steps:
       - bats -t katalog/tests/kyverno.sh
 
   - name: Destroy Kind Cluster for Kyverno
-    image: quay.io/sighup/mise:v2025.4.4
+    image: quay.io/sighup/mise:v2026.8.6
     volumes:
       - name: dockersock
         path: /var/run/docker.sock
@@ -345,7 +345,7 @@ environment:
   # Tool versions.
   KIND_VERSION: "0.30.0"
   KUBECTL_VERSION: "v1.34.0"
-  BATS_VERSION: "1.1.0"
+  BATS_VERSION: "1.14.0"
   KUSTOMIZE_VERSION: "5.6.0"
 
 trigger:
@@ -355,7 +355,7 @@ trigger:
 
 steps:
   - name: Create Kind Cluster for Gatekeeper
-    image: quay.io/sighup/mise:v2025.4.4
+    image: quay.io/sighup/mise:v2026.8.6
     pull: always
     depends_on:
       - clone
@@ -378,7 +378,7 @@ steps:
       - kind get kubeconfig --name $${GATEKEEPER_CLUSTER_NAME} > $${KUBECONFIG}
 
   - name: Gatekeeper End-to-End Tests
-    image: quay.io/sighup/mise:v2025.4.4
+    image: quay.io/sighup/mise:v2026.8.6
     pull: always
     network_mode: host
     depends_on:
@@ -397,7 +397,7 @@ steps:
       - bats -t katalog/tests/gatekeeper.sh
 
   - name: Destroy Kind Cluster for Gatekeeper
-    image: quay.io/sighup/mise:v2025.4.4
+    image: quay.io/sighup/mise:v2026.8.6
     volumes:
       - name: dockersock
         path: /var/run/docker.sock
@@ -453,7 +453,7 @@ environment:
   # Tool versions.
   KIND_VERSION: "0.30.0"
   KUBECTL_VERSION: "v1.34.0"
-  BATS_VERSION: "1.1.0"
+  BATS_VERSION: "1.14.0"
   KUSTOMIZE_VERSION: "5.6.0"
 
 trigger:
@@ -463,7 +463,7 @@ trigger:
 
 steps:
   - name: Create Kind Cluster for Kyverno
-    image: quay.io/sighup/mise:v2025.4.4
+    image: quay.io/sighup/mise:v2026.8.6
     pull: always
     depends_on:
       - clone
@@ -486,7 +486,7 @@ steps:
       - kind get kubeconfig --name $${KYVERNO_CLUSTER_NAME} > $${KUBECONFIG}
 
   - name: Kyverno End-to-End Tests
-    image: quay.io/sighup/mise:v2025.4.4
+    image: quay.io/sighup/mise:v2026.8.6
     pull: always
     network_mode: host
     depends_on:
@@ -505,7 +505,7 @@ steps:
       - bats -t katalog/tests/kyverno.sh
 
   - name: Destroy Kind Cluster for Kyverno
-    image: quay.io/sighup/mise:v2025.4.4
+    image: quay.io/sighup/mise:v2026.8.6
     volumes:
       - name: dockersock
         path: /var/run/docker.sock
@@ -561,7 +561,7 @@ environment:
   # Tool versions.
   KIND_VERSION: "0.31.0"
   KUBECTL_VERSION: "v1.35.5"
-  BATS_VERSION: "1.1.0"
+  BATS_VERSION: "1.14.0"
   KUSTOMIZE_VERSION: "5.6.0"
 
 trigger:
@@ -571,7 +571,7 @@ trigger:
 
 steps:
   - name: Create Kind Cluster for Gatekeeper
-    image: quay.io/sighup/mise:v2025.4.4
+    image: quay.io/sighup/mise:v2026.8.6
     pull: always
     depends_on:
       - clone
@@ -594,7 +594,7 @@ steps:
       - kind get kubeconfig --name $${GATEKEEPER_CLUSTER_NAME} > $${KUBECONFIG}
 
   - name: Gatekeeper End-to-End Tests
-    image: quay.io/sighup/mise:v2025.4.4
+    image: quay.io/sighup/mise:v2026.8.6
     pull: always
     network_mode: host
     depends_on:
@@ -613,7 +613,7 @@ steps:
       - bats -t katalog/tests/gatekeeper.sh
 
   - name: Destroy Kind Cluster for Gatekeeper
-    image: quay.io/sighup/mise:v2025.4.4
+    image: quay.io/sighup/mise:v2026.8.6
     volumes:
       - name: dockersock
         path: /var/run/docker.sock
@@ -669,7 +669,7 @@ environment:
   # Tool versions.
   KIND_VERSION: "0.31.0"
   KUBECTL_VERSION: "v1.35.5"
-  BATS_VERSION: "1.1.0"
+  BATS_VERSION: "1.14.0"
   KUSTOMIZE_VERSION: "5.6.0"
 
 trigger:
@@ -679,7 +679,7 @@ trigger:
 
 steps:
   - name: Create Kind Cluster for Kyverno
-    image: quay.io/sighup/mise:v2025.4.4
+    image: quay.io/sighup/mise:v2026.8.6
     pull: always
     depends_on:
       - clone
@@ -702,7 +702,7 @@ steps:
       - kind get kubeconfig --name $${KYVERNO_CLUSTER_NAME} > $${KUBECONFIG}
 
   - name: Kyverno End-to-End Tests
-    image: quay.io/sighup/mise:v2025.4.4
+    image: quay.io/sighup/mise:v2026.8.6
     pull: always
     network_mode: host
     depends_on:
@@ -721,7 +721,7 @@ steps:
       - bats -t katalog/tests/kyverno.sh
 
   - name: Destroy Kind Cluster for Kyverno
-    image: quay.io/sighup/mise:v2025.4.4
+    image: quay.io/sighup/mise:v2026.8.6
     volumes:
       - name: dockersock
         path: /var/run/docker.sock
