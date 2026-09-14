@@ -14,7 +14,7 @@ Welcome to the latest release of `Policy` module of [SIGHUP Distribution](https:
 
 ## Compatibility
 
-This release maintains compatibility with Kubernetes versions 1.33.x through 1.35.x.
+This release adds support for Kubernetes 1.36.x while maintaining compatibility with versions 1.33.x through 1.35.x.
 
 ## Update Guide 🦮
 
