@@ -1,0 +1,49 @@
+# Copyright (c) 2017-present SIGHUP s.r.l All rights reserved.
+# Use of this source code is governed by a BSD-style
+# license that can be found in the LICENSE file.
+
+---
+# Violates disallow-host-namespaces: shares the host network namespace.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    run: deployment-rejected-host-namespaces
+  name: deployment-rejected-host-namespaces
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      run: deployment-rejected-host-namespaces
+  template:
+    metadata:
+      labels:
+        run: deployment-rejected-host-namespaces
+    spec:
+      hostNetwork: true
+      containers:
+        - image: registry.sighup.io/fury/redis:5.0.8
+          name: deployment-rejected-host-namespaces
+          livenessProbe:
+            httpGet:
+              path: /healthy
+              port: 8080
+          readinessProbe:
+            httpGet:
+              path: /healthy
+              port: 8080
+          securityContext:
+            runAsNonRoot: true
+            allowPrivilegeEscalation: false
+            runAsUser: 1001
+            capabilities:
+              drop:
+                - ALL
+          resources:
+            requests:
+              memory: "60Mi"
+              cpu: "30m"
+            limits:
+              memory: "80Mi"
+              cpu: "50m"

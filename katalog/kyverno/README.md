@@ -24,6 +24,8 @@ This package ships a set of predefined policies that form the SD baseline, simil
 | restrict-sysctls               | Disallows sysctls except for an allowed "safe" subset.                                                                                       |
 | unique-ingress-host-and-path   | Ensures Ingresses are globally unique with respect to the host plus path combination.                                                       |
 
+Every policy in the table above is exercised by the end-to-end test suite, on each supported Kubernetes version.
+
 ## Upstream project
 
 This package is based on the upstream [Kyverno][kyverno-github].

@@ -1,0 +1,47 @@
+# Copyright (c) 2017-present SIGHUP s.r.l All rights reserved.
+# Use of this source code is governed by a BSD-style
+# license that can be found in the LICENSE file.
+
+---
+# Violates require-run-as-nonroot: runAsNonRoot set nowhere.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    run: deployment-rejected-run-as-root
+  name: deployment-rejected-run-as-root
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      run: deployment-rejected-run-as-root
+  template:
+    metadata:
+      labels:
+        run: deployment-rejected-run-as-root
+    spec:
+      containers:
+        - image: registry.sighup.io/fury/redis:5.0.8
+          name: deployment-rejected-run-as-root
+          livenessProbe:
+            httpGet:
+              path: /healthy
+              port: 8080
+          readinessProbe:
+            httpGet:
+              path: /healthy
+              port: 8080
+          securityContext:
+            allowPrivilegeEscalation: false
+            runAsUser: 1001
+            capabilities:
+              drop:
+                - ALL
+          resources:
+            requests:
+              memory: "60Mi"
+              cpu: "30m"
+            limits:
+              memory: "80Mi"
+              cpu: "50m"
