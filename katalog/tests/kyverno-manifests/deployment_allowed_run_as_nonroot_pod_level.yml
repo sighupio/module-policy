@@ -1,0 +1,50 @@
+# Copyright (c) 2017-present SIGHUP s.r.l All rights reserved.
+# Use of this source code is governed by a BSD-style
+# license that can be found in the LICENSE file.
+
+---
+# Allowed by require-run-as-nonroot via the pod-level anyPattern branch.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    run: deployment-allowed-run-as-nonroot-pod-level
+  name: deployment-allowed-run-as-nonroot-pod-level
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      run: deployment-allowed-run-as-nonroot-pod-level
+  template:
+    metadata:
+      labels:
+        run: deployment-allowed-run-as-nonroot-pod-level
+    spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1001
+      containers:
+        - image: registry.sighup.io/fury/redis:5.0.8
+          name: deployment-allowed-run-as-nonroot-pod-level
+          livenessProbe:
+            httpGet:
+              path: /healthy
+              port: 8080
+          readinessProbe:
+            httpGet:
+              path: /healthy
+              port: 8080
+          securityContext:
+            allowPrivilegeEscalation: false
+            runAsUser: 1001
+            capabilities:
+              drop:
+                - ALL
+          resources:
+            requests:
+              memory: "60Mi"
+              cpu: "30m"
+            limits:
+              memory: "80Mi"
+              cpu: "50m"

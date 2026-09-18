@@ -109,3 +109,158 @@ set -o pipefail
   [[ "$status" -ne 0 ]]
   [[ "$output" == *"unique-ingress-host-and-path"* ]]
 }
+
+# ---------------------------------------------------------------------------
+# Policy coverage.
+#
+# Each manifest below is katalog/tests/kyverno-manifests/deployment_trusted.yml
+# with exactly one deliberate change, so a rejection is attributable to a single
+# policy. Assertions match on the policy's own message rather than on a bare
+# non-zero exit, because an invalid manifest would also exit non-zero and would
+# otherwise look like a passing test.
+#
+# The [ALLOW] cases matter as much as the [DENY] ones: `anyPattern`, `deny`
+# conditions and `foreach` could all regress towards denying everything, which
+# would look healthy until a legitimate workload is blocked.
+# ---------------------------------------------------------------------------
+
+@test "[DENY] Deployment with a privileged container" {
+  info
+  deploy() {
+    kubectl apply -f katalog/tests/kyverno-manifests/deployment_rejected_privileged.yml
+  }
+  run deploy
+  [[ "$status" -ne 0 ]]
+  [[ "$output" == *"Privileged mode is disallowed"* ]]
+}
+
+@test "[DENY] Deployment allowing privilege escalation" {
+  info
+  deploy() {
+    kubectl apply -f katalog/tests/kyverno-manifests/deployment_rejected_privilege_escalation.yml
+  }
+  run deploy
+  [[ "$status" -ne 0 ]]
+  [[ "$output" == *"Privilege escalation is disallowed"* ]]
+}
+
+@test "[DENY] Deployment sharing a host namespace" {
+  info
+  deploy() {
+    kubectl apply -f katalog/tests/kyverno-manifests/deployment_rejected_host_namespaces.yml
+  }
+  run deploy
+  [[ "$status" -ne 0 ]]
+  [[ "$output" == *"Sharing the host namespaces is disallowed"* ]]
+}
+
+@test "[DENY] Deployment with a hostPath volume" {
+  info
+  deploy() {
+    kubectl apply -f katalog/tests/kyverno-manifests/deployment_rejected_host_path.yml
+  }
+  run deploy
+  [[ "$status" -ne 0 ]]
+  [[ "$output" == *"HostPath volumes are forbidden"* ]]
+}
+
+@test "[DENY] Deployment binding a host port" {
+  info
+  deploy() {
+    kubectl apply -f katalog/tests/kyverno-manifests/deployment_rejected_host_port.yml
+  }
+  run deploy
+  [[ "$status" -ne 0 ]]
+  [[ "$output" == *"Use of host ports is disallowed"* ]]
+}
+
+@test "[DENY] Deployment with a non-default procMount" {
+  info
+  deploy() {
+    kubectl apply -f katalog/tests/kyverno-manifests/deployment_rejected_proc_mount.yml
+  }
+  run deploy
+  [[ "$status" -ne 0 ]]
+  [[ "$output" == *"Changing the proc mount from the default is not allowed"* ]]
+}
+
+@test "[DENY] Deployment with a disallowed sysctl" {
+  info
+  deploy() {
+    kubectl apply -f katalog/tests/kyverno-manifests/deployment_rejected_sysctls.yml
+  }
+  run deploy
+  [[ "$status" -ne 0 ]]
+  [[ "$output" == *"Setting additional sysctls above the allowed type is disallowed"* ]]
+}
+
+@test "[DENY] Deployment that may run as root" {
+  info
+  deploy() {
+    kubectl apply -f katalog/tests/kyverno-manifests/deployment_rejected_run_as_root.yml
+  }
+  run deploy
+  [[ "$status" -ne 0 ]]
+  [[ "$output" == *"Running as root is not allowed"* ]]
+}
+
+@test "[DENY] Deployment adding a capability outside the allowed list" {
+  info
+  deploy() {
+    kubectl apply -f katalog/tests/kyverno-manifests/deployment_rejected_capabilities.yml
+  }
+  run deploy
+  [[ "$status" -ne 0 ]]
+  [[ "$output" == *"Any capabilities added beyond the allowed list"* ]]
+}
+
+# CHOWN is accepted by disallow-capabilities but not by the strict policy, which
+# permits NET_BIND_SERVICE alone. This isolates the strict policy from the lenient one.
+@test "[DENY] Deployment adding a capability disallowed only by the strict policy" {
+  info
+  deploy() {
+    kubectl apply -f katalog/tests/kyverno-manifests/deployment_rejected_capabilities_strict.yml
+  }
+  run deploy
+  [[ "$status" -ne 0 ]]
+  [[ "$output" == *"Any capabilities added other than NET_BIND_SERVICE are disallowed"* ]]
+}
+
+@test "[DENY] Deployment that does not drop ALL capabilities" {
+  info
+  deploy() {
+    kubectl apply -f katalog/tests/kyverno-manifests/deployment_rejected_no_drop_all.yml
+  }
+  run deploy
+  [[ "$status" -ne 0 ]]
+  [[ "$output" == *"Containers must drop"* ]]
+}
+
+@test "[ALLOW] Deployment with an allowed sysctl" {
+  info
+  deploy() {
+    kubectl apply -f katalog/tests/kyverno-manifests/deployment_allowed_sysctls.yml
+  }
+  run deploy
+  [[ "$status" -eq 0 ]]
+}
+
+# Exercises the first anyPattern branch: runAsNonRoot satisfied at pod level
+# rather than on each container.
+@test "[ALLOW] Deployment setting runAsNonRoot at pod level" {
+  info
+  deploy() {
+    kubectl apply -f katalog/tests/kyverno-manifests/deployment_allowed_run_as_nonroot_pod_level.yml
+  }
+  run deploy
+  [[ "$status" -eq 0 ]]
+}
+
+@test "[ALLOW] Deployment adding only NET_BIND_SERVICE" {
+  info
+  deploy() {
+    kubectl apply -f katalog/tests/kyverno-manifests/deployment_allowed_capabilities.yml
+  }
+  run deploy
+  [[ "$status" -eq 0 ]]
+}

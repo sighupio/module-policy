@@ -31,3 +31,24 @@ What was changed:
 - Manually added policies to have a similar ruleset as gatekeeper
 - Whitelisted all the `infra` fury namespaces in the `MAINTENANCE.values.yaml` variable file
 - Keep the Validating Admission Policy set to false
+
+## Testing the policies
+
+`katalog/tests/kyverno.sh` covers every policy in `policies/collection/`, on each supported Kubernetes
+version.
+
+> **When you add a policy, add at least one test case for it in the same PR.** A policy with no test is
+> indistinguishable from a policy that silently stopped being enforced.
+
+Conventions to follow when writing the case:
+
+- Copy `katalog/tests/kyverno-manifests/deployment_trusted.yml` — the baseline that satisfies every
+  policy — and introduce **exactly one** violation, so a rejection is attributable to a single policy.
+- Assert on the policy's `validate.message`, not just on a non-zero exit code: a malformed manifest also
+  exits non-zero, so an exit-code-only test can pass while the policy does nothing.
+- Where policies overlap, choose a violation only the target rejects (`CHOWN`, for instance, is accepted
+  by `disallow-capabilities` but refused by `disallow-capabilities-strict`).
+- Add an `[ALLOW]` case too when the policy uses `anyPattern`, `deny` or `foreach` — those paths can
+  regress towards denying everything, which a deny-only test cannot detect.
+- Keep the fixtures as `Deployment`s. The policies match `kind: Pod`, so this also exercises Kyverno's
+  autogen of rules for Pod controllers.
