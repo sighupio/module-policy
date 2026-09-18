@@ -264,3 +264,187 @@ set -o pipefail
   run deploy
   [[ "$status" -eq 0 ]]
 }
+
+# ---------------------------------------------------------------------------
+# Deployment-level checks.
+#
+# These cover the conditions that are not policy evaluation but that policy
+# enforcement silently depends on: policy readiness, autogen for pod
+# controllers, webhook registration, namespace exclusion and the state of the
+# four controllers. A regression in any of them leaves the cluster looking
+# healthy while policies quietly stop being applied.
+# ---------------------------------------------------------------------------
+
+@test "[CHECK] Every default policy is installed and Ready" {
+  info
+  # .status.ready is deprecated upstream in favour of conditions, so assert on
+  # the Ready condition. The controllers have already rolled out by this point,
+  # so a short timeout is enough and keeps a regression from stalling the job.
+  run kubectl wait --for=condition=Ready clusterpolicy --all --timeout=2m
+  [ "$status" -eq 0 ]
+
+  # The cluster must hold exactly the policies shipped in the katalog, so adding
+  # a policy file without it reaching the cluster fails here.
+  expected=$(find katalog/kyverno/policies/collection -name '*.yaml' | wc -l | tr -d ' ')
+  actual=$(kubectl get clusterpolicy --no-headers | wc -l | tr -d ' ')
+  echo "policies in katalog: ${expected}, in cluster: ${actual}" >&3
+  [ "$actual" -eq "$expected" ]
+}
+
+@test "[CHECK] Autogen rules are generated for pod controllers" {
+  info
+  # Every policy matches kind Pod only; enforcement on Deployments and friends
+  # depends entirely on Kyverno autogenerating the controller rules.
+  failed=""
+  for p in $(kubectl get clusterpolicy -o jsonpath='{.items[*].metadata.name}'); do
+    # matches Ingress, nothing to autogen
+    [ "$p" = "unique-ingress-host-and-path" ] && continue
+    count=$(kubectl get clusterpolicy "$p" -o jsonpath='{.status.autogen.rules[*].name}' | wc -w | tr -d ' ')
+    echo "  ${p}: ${count} autogen rule(s)" >&3
+    [ "$count" -gt 0 ] || failed="${failed} ${p}"
+  done
+  echo "policies without autogen rules:${failed:- none}" >&3
+  [ -z "$failed" ]
+}
+
+@test "[CHECK] require-pod-probes autogen stays restricted to the annotated controllers" {
+  info
+  run kubectl get clusterpolicy require-pod-probes \
+    -o jsonpath='{.metadata.annotations.pod-policies\.kyverno\.io/autogen-controllers}'
+  [ "$status" -eq 0 ]
+  [ "$output" = "DaemonSet,Deployment,StatefulSet" ]
+
+  # The annotation must actually take effect: no CronJob/Job rule may be generated.
+  rules=$(kubectl get clusterpolicy require-pod-probes -o jsonpath='{.status.autogen.rules[*].name}')
+  echo "autogen rules: ${rules}" >&3
+  [[ "$rules" != *cronjob* ]]
+}
+
+@test "[ALLOW] CronJob without probes is not caught by require-pod-probes" {
+  info
+  deploy() {
+    kubectl apply -f katalog/tests/kyverno-manifests/cronjob_allowed_without_probes.yml
+  }
+  run deploy
+  [[ "$status" -eq 0 ]]
+}
+
+@test "[DENY] StatefulSet without probes is caught by require-pod-probes" {
+  info
+  deploy() {
+    kubectl apply -f katalog/tests/kyverno-manifests/statefulset_rejected_without_probes.yml
+  }
+  run deploy
+  [[ "$status" -ne 0 ]]
+  [[ "$output" == *"validate-probes"* ]]
+}
+
+@test "[CHECK] No ValidatingAdmissionPolicy is generated from the policies" {
+  info
+  # We deploy with --generateValidatingAdmissionPolicy=false on purpose: we do
+  # not want Kyverno emitting native VAP objects.
+  generated=$(kubectl get clusterpolicy \
+    -o jsonpath='{range .items[*]}{.metadata.name}={.status.validatingadmissionpolicy.generated}{"\n"}{end}' \
+    | grep '=true$' || true)
+  echo "policies reporting a generated VAP: ${generated:-none}" >&3
+  [ -z "$generated" ]
+
+  run kubectl get deployment kyverno-admission-controller -n kyverno \
+    -o jsonpath='{.spec.template.spec.containers[*].args}'
+  [ "$status" -eq 0 ]
+  [[ "$output" == *"--generateValidatingAdmissionPolicy=false"* ]]
+}
+
+@test "[CHECK] Kyverno controllers have not restarted" {
+  info
+  # The rollout checks above pass even for a pod that crash-looped and settled.
+  restarted=$(kubectl get pods -n kyverno -l app.kubernetes.io/part-of=kyverno \
+    -o jsonpath='{range .items[*]}{.metadata.name}={.status.containerStatuses[*].restartCount}{"\n"}{end}' \
+    | grep -v '=0$' || true)
+  echo "pods with restarts: ${restarted:-none}" >&3
+  [ -z "$restarted" ]
+}
+
+@test "[CHECK] Kyverno controller logs are free of panics" {
+  info
+  # There are 9 pods, above the default --max-log-requests of 5; without raising
+  # it the command errors and the assertions below would pass on empty output.
+  logs=$(kubectl logs -n kyverno -l app.kubernetes.io/part-of=kyverno \
+    --tail=500 --prefix --max-log-requests=20)
+  [ -n "$logs" ]
+  [[ "$logs" != *"panic:"* ]]
+  [[ "$logs" != *"failed to create webhook"* ]]
+}
+
+@test "[CHECK] Kyverno images are served by the SIGHUP registry at the katalog version" {
+  info
+  # Guards the kustomize image override and catches a chart regeneration that
+  # reintroduces upstream image names.
+  expected=$(grep -oE 'reg\.kyverno\.io/kyverno/kyverno:v[0-9.]+' katalog/kyverno/core/deploy.yaml \
+    | head -1 | sed 's/.*://')
+  echo "expected tag from katalog: ${expected}" >&3
+  [ -n "$expected" ]
+
+  images=$(kubectl get deployment -n kyverno \
+    -o jsonpath='{range .items[*]}{range .spec.template.spec.containers[*]}{.image}{"\n"}{end}{range .spec.template.spec.initContainers[*]}{.image}{"\n"}{end}{end}' \
+    | sed '/^$/d')
+  echo "${images}" >&3
+
+  wrong_registry=$(echo "${images}" | grep -v '^registry.sighup.io/fury/kyverno/' || true)
+  [ -z "$wrong_registry" ]
+
+  wrong_tag=$(echo "${images}" | grep -v ":${expected}$" || true)
+  [ -z "$wrong_tag" ]
+}
+
+@test "[CHECK] Admission webhooks are registered for pods and their controllers" {
+  info
+  cfg=$(kubectl get validatingwebhookconfiguration -o name | grep 'kyverno-resource-validating' | head -1)
+  echo "webhook configuration: ${cfg}" >&3
+  [ -n "$cfg" ]
+
+  resources=$(kubectl get "$cfg" -o jsonpath='{.webhooks[*].rules[*].resources[*]}')
+  echo "resources: ${resources}" >&3
+  [[ "$resources" == *pods* ]]
+  # present only because autogen reached the webhook
+  [[ "$resources" == *deployments* ]]
+
+  # Ignore would mean requests sail through whenever Kyverno is unavailable.
+  policies=$(kubectl get "$cfg" -o jsonpath='{.webhooks[*].failurePolicy}')
+  echo "failurePolicy: ${policies}" >&3
+  [[ "$policies" != *Ignore* ]]
+}
+
+@test "[CHECK] Infra namespaces are excluded from the webhooks" {
+  info
+  cfg=$(kubectl get validatingwebhookconfiguration -o name | grep 'kyverno-resource-validating' | head -1)
+  selector=$(kubectl get "$cfg" -o jsonpath='{.webhooks[*].namespaceSelector}')
+  echo "namespaceSelector: ${selector}" >&3
+  for ns in kube-system kyverno logging monitoring ingress-nginx cert-manager; do
+    [[ "$selector" == *"$ns"* ]]
+  done
+}
+
+@test "[CHECK] Monitoring and disruption budgets are in place" {
+  info
+  pdbs=$(kubectl get poddisruptionbudget -n kyverno --no-headers | wc -l | tr -d ' ')
+  monitors=$(kubectl get servicemonitor -n kyverno --no-headers | wc -l | tr -d ' ')
+  echo "pdbs: ${pdbs}, servicemonitors: ${monitors}" >&3
+  [ "$pdbs" -eq 4 ]
+  [ "$monitors" -eq 4 ]
+}
+
+@test "[CHECK] Kyverno controllers keep their hardened security context" {
+  info
+  # Never loosen these to make something pass.
+  for c in admission background cleanup reports; do
+    d="kyverno-${c}-controller"
+    nonroot=$(kubectl get deployment "$d" -n kyverno -o jsonpath='{.spec.template.spec.containers[0].securityContext.runAsNonRoot}')
+    escalation=$(kubectl get deployment "$d" -n kyverno -o jsonpath='{.spec.template.spec.containers[0].securityContext.allowPrivilegeEscalation}')
+    readonly_fs=$(kubectl get deployment "$d" -n kyverno -o jsonpath='{.spec.template.spec.containers[0].securityContext.readOnlyRootFilesystem}')
+    echo "  ${d}: runAsNonRoot=${nonroot} allowPrivilegeEscalation=${escalation} readOnlyRootFilesystem=${readonly_fs}" >&3
+    [ "$nonroot" = "true" ]
+    [ "$escalation" = "false" ]
+    [ "$readonly_fs" = "true" ]
+  done
+}

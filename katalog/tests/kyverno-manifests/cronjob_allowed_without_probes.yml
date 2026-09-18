@@ -1,0 +1,38 @@
+# Copyright (c) 2017-present SIGHUP s.r.l All rights reserved.
+# Use of this source code is governed by a BSD-style
+# license that can be found in the LICENSE file.
+
+---
+# Allowed: require-pod-probes restricts autogen to DaemonSet, Deployment and
+# StatefulSet, so a CronJob without probes must NOT be rejected. Every other
+# policy still applies to it, hence the full securityContext.
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: cronjob-allowed-without-probes
+  namespace: default
+spec:
+  schedule: "0 0 31 2 *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: Never
+          containers:
+            - image: registry.sighup.io/fury/redis:5.0.8
+              name: cronjob-allowed-without-probes
+              command: ["true"]
+              securityContext:
+                runAsNonRoot: true
+                allowPrivilegeEscalation: false
+                runAsUser: 1001
+                capabilities:
+                  drop:
+                    - ALL
+              resources:
+                requests:
+                  memory: "60Mi"
+                  cpu: "30m"
+                limits:
+                  memory: "80Mi"
+                  cpu: "50m"
