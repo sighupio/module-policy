@@ -4,6 +4,8 @@
 
 ---
 # Violates disallow-proc-mount: procMount is Unmasked instead of Default.
+# hostUsers must be false: since Kubernetes 1.36 the API server rejects
+# procMount: Unmasked without it, before the request reaches Kyverno.
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -21,6 +23,7 @@ spec:
       labels:
         run: deployment-rejected-proc-mount
     spec:
+      hostUsers: false
       containers:
         - image: registry.sighup.io/fury/redis:5.0.8
           name: deployment-rejected-proc-mount
@@ -34,12 +37,11 @@ spec:
               port: 8080
           securityContext:
             runAsNonRoot: true
-            allowPrivilegeEscalation: true
+            allowPrivilegeEscalation: false
             runAsUser: 1001
             capabilities:
               drop:
                 - ALL
-            privileged: true
             procMount: Unmasked
           resources:
             requests:

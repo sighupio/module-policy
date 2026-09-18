@@ -309,13 +309,15 @@ set -o pipefail
 
 @test "[CHECK] require-pod-probes autogen stays restricted to the annotated controllers" {
   info
-  run kubectl get clusterpolicy require-pod-probes \
-    -o jsonpath='{.metadata.annotations.pod-policies\.kyverno\.io/autogen-controllers}'
-  [ "$status" -eq 0 ]
-  [ "$output" = "DaemonSet,Deployment,StatefulSet" ]
+  # Not `run`: kubectl prints a deprecation warning for kyverno.io/v1 on stderr,
+  # and bats folds stderr into $output, which would corrupt an exact comparison.
+  controllers=$(kubectl get clusterpolicy require-pod-probes \
+    -o jsonpath='{.metadata.annotations.pod-policies\.kyverno\.io/autogen-controllers}' 2>/dev/null)
+  echo "autogen-controllers: ${controllers}" >&3
+  [ "$controllers" = "DaemonSet,Deployment,StatefulSet" ]
 
   # The annotation must actually take effect: no CronJob/Job rule may be generated.
-  rules=$(kubectl get clusterpolicy require-pod-probes -o jsonpath='{.status.autogen.rules[*].name}')
+  rules=$(kubectl get clusterpolicy require-pod-probes -o jsonpath='{.status.autogen.rules[*].name}' 2>/dev/null)
   echo "autogen rules: ${rules}" >&3
   [[ "$rules" != *cronjob* ]]
 }
