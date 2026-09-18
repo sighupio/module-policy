@@ -47,3 +47,10 @@ loop_it(){
   done
   return 0
 }
+
+# Kyverno wraps long validation messages across lines in the webhook response,
+# and the wrap position changes between Kyverno versions. Collapse whitespace
+# before matching so message assertions survive an engine upgrade.
+flatten(){
+  echo "${*}" | tr -s '[:space:]' ' '
+}

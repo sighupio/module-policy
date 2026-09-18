@@ -87,7 +87,7 @@ set -o pipefail
   }
   run deploy
   [[ "$status" -ne 0 ]]
-  [[ "$output" == *"Using a mutable image tag"* ]]
+  [[ "$(flatten "$output")" == *"Using a mutable image tag"* ]]
 }
 
 @test "[DENY] Pod without liveness/readiness probes" {
@@ -97,7 +97,7 @@ set -o pipefail
   }
   run deploy
   [[ "$status" -ne 0 ]]
-  [[ "$output" == *"validate-probes"* ]]
+  [[ "$(flatten "$output")" == *"validate-probes"* ]]
 }
 
 @test "[DENY] Duplicated ingress" {
@@ -107,7 +107,7 @@ set -o pipefail
   }
   run deploy
   [[ "$status" -ne 0 ]]
-  [[ "$output" == *"unique-ingress-host-and-path"* ]]
+  [[ "$(flatten "$output")" == *"unique-ingress-host-and-path"* ]]
 }
 
 # ---------------------------------------------------------------------------
@@ -131,7 +131,7 @@ set -o pipefail
   }
   run deploy
   [[ "$status" -ne 0 ]]
-  [[ "$output" == *"Privileged mode is disallowed"* ]]
+  [[ "$(flatten "$output")" == *"Privileged mode is disallowed"* ]]
 }
 
 @test "[DENY] Deployment allowing privilege escalation" {
@@ -141,7 +141,7 @@ set -o pipefail
   }
   run deploy
   [[ "$status" -ne 0 ]]
-  [[ "$output" == *"Privilege escalation is disallowed"* ]]
+  [[ "$(flatten "$output")" == *"Privilege escalation is disallowed"* ]]
 }
 
 @test "[DENY] Deployment sharing a host namespace" {
@@ -151,7 +151,7 @@ set -o pipefail
   }
   run deploy
   [[ "$status" -ne 0 ]]
-  [[ "$output" == *"Sharing the host namespaces is disallowed"* ]]
+  [[ "$(flatten "$output")" == *"Sharing the host namespaces is disallowed"* ]]
 }
 
 @test "[DENY] Deployment with a hostPath volume" {
@@ -161,7 +161,7 @@ set -o pipefail
   }
   run deploy
   [[ "$status" -ne 0 ]]
-  [[ "$output" == *"HostPath volumes are forbidden"* ]]
+  [[ "$(flatten "$output")" == *"HostPath volumes are forbidden"* ]]
 }
 
 @test "[DENY] Deployment binding a host port" {
@@ -171,7 +171,7 @@ set -o pipefail
   }
   run deploy
   [[ "$status" -ne 0 ]]
-  [[ "$output" == *"Use of host ports is disallowed"* ]]
+  [[ "$(flatten "$output")" == *"Use of host ports is disallowed"* ]]
 }
 
 @test "[DENY] Deployment with a non-default procMount" {
@@ -181,7 +181,7 @@ set -o pipefail
   }
   run deploy
   [[ "$status" -ne 0 ]]
-  [[ "$output" == *"Changing the proc mount from the default is not allowed"* ]]
+  [[ "$(flatten "$output")" == *"Changing the proc mount from the default is not allowed"* ]]
 }
 
 @test "[DENY] Deployment with a disallowed sysctl" {
@@ -191,7 +191,7 @@ set -o pipefail
   }
   run deploy
   [[ "$status" -ne 0 ]]
-  [[ "$output" == *"Setting additional sysctls above the allowed type is disallowed"* ]]
+  [[ "$(flatten "$output")" == *"Setting additional sysctls above the allowed type is disallowed"* ]]
 }
 
 @test "[DENY] Deployment that may run as root" {
@@ -201,7 +201,7 @@ set -o pipefail
   }
   run deploy
   [[ "$status" -ne 0 ]]
-  [[ "$output" == *"Running as root is not allowed"* ]]
+  [[ "$(flatten "$output")" == *"Running as root is not allowed"* ]]
 }
 
 @test "[DENY] Deployment adding a capability outside the allowed list" {
@@ -211,7 +211,7 @@ set -o pipefail
   }
   run deploy
   [[ "$status" -ne 0 ]]
-  [[ "$output" == *"Any capabilities added beyond the allowed list"* ]]
+  [[ "$(flatten "$output")" == *"Any capabilities added beyond the allowed list"* ]]
 }
 
 # CHOWN is accepted by disallow-capabilities but not by the strict policy, which
@@ -223,7 +223,7 @@ set -o pipefail
   }
   run deploy
   [[ "$status" -ne 0 ]]
-  [[ "$output" == *"Any capabilities added other than NET_BIND_SERVICE are disallowed"* ]]
+  [[ "$(flatten "$output")" == *"Any capabilities added other than NET_BIND_SERVICE are disallowed"* ]]
 }
 
 @test "[DENY] Deployment that does not drop ALL capabilities" {
@@ -233,7 +233,7 @@ set -o pipefail
   }
   run deploy
   [[ "$status" -ne 0 ]]
-  [[ "$output" == *"Containers must drop"* ]]
+  [[ "$(flatten "$output")" == *"Containers must drop"* ]]
 }
 
 @test "[ALLOW] Deployment with an allowed sysctl" {
@@ -338,7 +338,7 @@ set -o pipefail
   }
   run deploy
   [[ "$status" -ne 0 ]]
-  [[ "$output" == *"validate-probes"* ]]
+  [[ "$(flatten "$output")" == *"validate-probes"* ]]
 }
 
 @test "[CHECK] No ValidatingAdmissionPolicy is generated from the policies" {
@@ -354,7 +354,7 @@ set -o pipefail
   run kubectl get deployment kyverno-admission-controller -n kyverno \
     -o jsonpath='{.spec.template.spec.containers[*].args}'
   [ "$status" -eq 0 ]
-  [[ "$output" == *"--generateValidatingAdmissionPolicy=false"* ]]
+  [[ "$(flatten "$output")" == *"--generateValidatingAdmissionPolicy=false"* ]]
 
   # Policy status alone is not enough: check the cluster for objects actually
   # named after our policies. MutatingAdmissionPolicy only reached v1 in
