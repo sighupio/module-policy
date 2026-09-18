@@ -353,6 +353,22 @@ set -o pipefail
     -o jsonpath='{.spec.template.spec.containers[*].args}'
   [ "$status" -eq 0 ]
   [[ "$output" == *"--generateValidatingAdmissionPolicy=false"* ]]
+
+  # Policy status alone is not enough: check the cluster for objects actually
+  # named after our policies. MutatingAdmissionPolicy only reached v1 in
+  # Kubernetes 1.36, so on older clusters in the matrix the resource type is not
+  # served at all - that is a pass, and must not be confused with "no objects".
+  for kind in validatingadmissionpolicies validatingadmissionpolicybindings mutatingadmissionpolicies; do
+    if kubectl api-resources --api-group=admissionregistration.k8s.io -o name 2>/dev/null | grep -q "^${kind}\."; then
+      objects=$(kubectl get "$kind" -o jsonpath='{.items[*].metadata.name}' 2>/dev/null || true)
+      echo "  ${kind}: ${objects:-none}" >&3
+      for p in $(kubectl get clusterpolicy -o jsonpath='{.items[*].metadata.name}'); do
+        [[ "$objects" != *"$p"* ]]
+      done
+    else
+      echo "  ${kind}: not served by this cluster" >&3
+    fi
+  done
 }
 
 @test "[CHECK] Kyverno controllers have not restarted" {
@@ -413,6 +429,12 @@ set -o pipefail
   policies=$(kubectl get "$cfg" -o jsonpath='{.webhooks[*].failurePolicy}')
   echo "failurePolicy: ${policies}" >&3
   [[ "$policies" != *Ignore* ]]
+
+  # The mutating configuration carries the default registry mutation, so its
+  # absence would silently disable that path.
+  mcfg=$(kubectl get mutatingwebhookconfiguration -o name | grep 'kyverno-resource-mutating' | head -1)
+  echo "mutating webhook configuration: ${mcfg}" >&3
+  [ -n "$mcfg" ]
 }
 
 @test "[CHECK] Infra namespaces are excluded from the webhooks" {
@@ -420,7 +442,12 @@ set -o pipefail
   cfg=$(kubectl get validatingwebhookconfiguration -o name | grep 'kyverno-resource-validating' | head -1)
   selector=$(kubectl get "$cfg" -o jsonpath='{.webhooks[*].namespaceSelector}')
   echo "namespaceSelector: ${selector}" >&3
-  for ns in kube-system kyverno logging monitoring ingress-nginx cert-manager; do
+  # All 15 namespaces from the webhooks key of the kyverno ConfigMap. A short
+  # list here would let infra workloads start being blocked.
+  for ns in kube-system kyverno logging monitoring ingress-nginx ingress-haproxy \
+            cert-manager tigera-operator calico-system calico-api vmware-system-csi \
+            pomerium tracing forecastle external-dns; do
+    echo "  excluded: ${ns}" >&3
     [[ "$selector" == *"$ns"* ]]
   done
 }
@@ -447,4 +474,39 @@ set -o pipefail
     [ "$escalation" = "false" ]
     [ "$readonly_fs" = "true" ]
   done
+}
+
+# Reports are produced from the admission path (--admissionReports=true plus
+# --aggregateReports=true), so they appear within seconds of a resource being
+# admitted. The periodic background scan is a different path and runs on
+# --backgroundScanInterval=1h, which is why re-evaluation of pre-existing
+# resources stays a manual check.
+@test "[CHECK] Policy reports are produced for admitted resources" {
+  info
+  # The [ALLOW] deployments above are the subjects; give the reports controller
+  # time to aggregate them.
+  found=""
+  for _ in $(seq 1 60); do
+    if [ -n "$(kubectl get policyreport -n default -o jsonpath='{.items[*].metadata.name}' 2>/dev/null)" ]; then
+      found=yes
+      break
+    fi
+    sleep 5
+  done
+  echo "policyreports in default: $(kubectl get policyreport -n default --no-headers 2>/dev/null | wc -l | tr -d ' ')" >&3
+  [ -n "$found" ]
+
+  # Results must name our policies, not merely exist.
+  policies=$(kubectl get policyreport -n default -o jsonpath='{.items[*].results[*].policy}')
+  echo "policies in reports: ${policies}" >&3
+  [[ "$policies" == *disallow-* ]]
+
+  # At least one passing result: a report containing only failures would mean
+  # the compliant fixtures are being evaluated wrongly.
+  passed=""
+  for n in $(kubectl get policyreport -n default -o jsonpath='{.items[*].summary.pass}'); do
+    [ "$n" -gt 0 ] 2>/dev/null && passed=yes
+  done
+  echo "pass counts: $(kubectl get policyreport -n default -o jsonpath='{.items[*].summary.pass}')" >&3
+  [ -n "$passed" ]
 }

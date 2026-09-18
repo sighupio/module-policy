@@ -52,3 +52,16 @@ Conventions to follow when writing the case:
   regress towards denying everything, which a deny-only test cannot detect.
 - Keep the fixtures as `Deployment`s. The policies match `kind: Pod`, so this also exercises Kyverno's
   autogen of rules for Pod controllers.
+
+### What the suite does not cover
+
+Verify these by hand when upgrading Kyverno or adding a Kubernetes version:
+
+| Not automated | Why |
+| ------------- | --- |
+| Background scan re-evaluating pre-existing resources, and the `{{ request.operation \|\| 'BACKGROUND' }}` branch of the preconditions | `--backgroundScanInterval=1h`. The suite only sees reports produced by the admission path, which always carries a real operation. |
+| Metrics endpoint content | Needs a pod that can reach `kyverno-svc-metrics:8000`. The suite only asserts the four ServiceMonitors exist. |
+| Default registry mutation (`enableDefaultRegistryMutation`) | Needs a server-side dry-run on an unqualified image. |
+| `excludeGroups: system:nodes` | Needs impersonation plus RBAC for the impersonated identity. |
+| `resourceFilters`, `generateSuccessEvents`, `webhookAnnotations`, `updateRequestThreshold` | Configuration only: either no observable effect on kind, or only under load. |
+| In-place upgrade from the previous release | Needs its own pipeline that deploys the previous tag first. |
