@@ -6,7 +6,7 @@
 
 A policy is a group of rules that enforce a desired behavior. This package provides a set of common policies out of the box to get started in securing your cluster. A policy in Gatekeeper is defined by two objects: a `ConstraintTemplate`, which defines the common logic of the policy, and a `Constraint`, which instantiates that logic with the right values for the required parameters.
 
-All the `Constraints` exclude the SD "infra" namespaces (`kube-system`, `logging`, `monitoring`, `ingress-nginx`, `cert-manager`) by default to avoid service disruption.
+All the `Constraints` exclude the SD "infra" namespaces (`kube-system`, `logging`, `monitoring`, `ingress-nginx`, `ingress-haproxy`, `cert-manager`, `tigera-operator`, `calico-system`, `calico-api`, `vmware-system-csi`, `pomerium`, `tracing`, `forecastle`, `external-dns`, `headlamp`) by default to avoid service disruption.
 
 The following constraint templates ship with SIGHUP Distribution:
 

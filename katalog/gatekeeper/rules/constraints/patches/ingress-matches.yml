@@ -17,8 +17,10 @@
       - calico-api
       - vmware-system-csi
       - pomerium
+      - tracing
       - forecastle
       - external-dns
+      - headlamp
     kinds:
       - apiGroups: ["extensions", "networking.k8s.io"]
         kinds: ["Ingress"]

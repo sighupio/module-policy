@@ -20,6 +20,7 @@
       - tracing
       - forecastle
       - external-dns
+      - headlamp
     kinds:
       - apiGroups: ["batch", "extensions", "apps", ""]
         kinds:
