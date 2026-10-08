@@ -38,6 +38,12 @@ spec:
         value:
         - CREATE
         - UPDATE
+      # The autogen-controllers annotation keeps Job and CronJob out of the
+      # generated rules, but their Pods still match this one: skip Pods owned
+      # by a Job, or batch workloads are admitted and then never start.
+      - key: "{{ request.object.metadata.ownerReferences[?kind=='Job'] || `[]` | length(@) }}"
+        operator: Equals
+        value: 0
     validate:
       message: "Liveness, readiness, or startup probes are required for all containers."
       foreach:

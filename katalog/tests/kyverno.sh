@@ -331,6 +331,25 @@ set -o pipefail
   [[ "$status" -eq 0 ]]
 }
 
+# Admission of the Job alone proves nothing: the Pod rule used to reject the
+# Pods the job controller creates, leaving the Job stuck with only FailedCreate
+# events. Assert that the Pod actually gets created.
+@test "[ALLOW] Job without probes gets its Pod created" {
+  info
+  run kubectl apply -f katalog/tests/kyverno-manifests/job_allowed_without_probes.yml
+  [[ "$status" -eq 0 ]]
+
+  pod_created() {
+    [ -n "$(kubectl get pods -n default -l job-name=job-allowed-without-probes -o name 2>/dev/null)" ]
+  }
+  # On timeout, still print the events below before failing.
+  loop_it pod_created 30 2 || true
+  failed=$(kubectl get events -n default --field-selector involvedObject.name=job-allowed-without-probes,reason=FailedCreate \
+    -o jsonpath='{.items[*].message}')
+  echo "FailedCreate events: ${failed:-none}" >&3
+  [[ "$loop_it_result" -eq 0 ]]
+}
+
 @test "[DENY] StatefulSet without probes is caught by require-pod-probes" {
   info
   deploy() {
