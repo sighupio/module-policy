@@ -444,11 +444,11 @@ set -o pipefail
   cfg=$(kubectl get validatingwebhookconfiguration -o name | grep 'kyverno-resource-validating' | head -1)
   selector=$(kubectl get "$cfg" -o jsonpath='{.webhooks[*].namespaceSelector}')
   echo "namespaceSelector: ${selector}" >&3
-  # All 15 namespaces from the webhooks key of the kyverno ConfigMap. A short
+  # All 16 namespaces from the webhooks key of the kyverno ConfigMap. A short
   # list here would let infra workloads start being blocked.
   for ns in kube-system kyverno logging monitoring ingress-nginx ingress-haproxy \
             cert-manager tigera-operator calico-system calico-api vmware-system-csi \
-            pomerium tracing forecastle external-dns; do
+            pomerium tracing forecastle external-dns headlamp; do
     echo "  excluded: ${ns}" >&3
     [[ "$selector" == *"$ns"* ]]
   done
