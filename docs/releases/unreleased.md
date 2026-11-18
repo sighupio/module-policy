@@ -2,12 +2,14 @@
 
 Welcome to the latest release of `Policy` module of [SIGHUP Distribution](https://github.com/sighupio/distribution) maintained by team SIGHUP by ReeVo.
 
+This release updates Gatekeeper Policy Manager to `v2.1.2`.
+
 ## Component Images 🚢
 
 | Component                   | Supported Version                                                                     | Previous Version |
 | --------------------------- | ------------------------------------------------------------------------------------- | ---------------- |
 | `gatekeeper`                | [`v3.23.1`](https://github.com/open-policy-agent/gatekeeper/releases/tag/v3.23.1)     | `v3.23.1`        |
-| `gatekeeper-policy-manager` | [`v2.1.2`](https://github.com/sighupio/gatekeeper-policy-manager/releases/tag/v2.1.2) | `v2.1.2`         |
+| `gatekeeper-policy-manager` | [`v2.1.2`](https://github.com/sighupio/gatekeeper-policy-manager/releases/tag/v2.1.2) | `v2.1.0`         |
 | `kyverno`                   | [`v1.19.1`](https://github.com/kyverno/kyverno/releases/tag/v1.19.1)                  | `v1.19.1`        |
 
 > Please refer the individual release notes to get a detailed information on each release.
@@ -15,6 +17,14 @@ Welcome to the latest release of `Policy` module of [SIGHUP Distribution](https:
 ## Compatibility
 
 This release maintains compatibility with Kubernetes versions 1.33.x through 1.36.x.
+
+## Notable changes
+
+### Gatekeeper Policy Manager
+
+GPM `v2.1.1` and `v2.1.2` are security releases. They stop trusting the compromised eMudhra intermediate certificates, and they fix vulnerabilities in Go, `golang.org/x/net` and `go-jose`.
+
+The module's own deployment runs GPM without authentication and needs no action. If you enabled authentication, GPM `v2.1.2` rejects a JWK set that holds an RSA key larger than 4096 bits. Read the [`v2.1.2` release notes](https://github.com/sighupio/gatekeeper-policy-manager/releases/tag/v2.1.2) before you upgrade.
 
 ## Update Guide 🦮
 
