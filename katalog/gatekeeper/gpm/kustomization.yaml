@@ -16,4 +16,4 @@ resources:
 images:
   - name: quay.io/sighup/gatekeeper-policy-manager
     newName: registry.sighup.io/fury/gatekeeper-policy-manager
-    newTag: v2.1.0
+    newTag: v2.1.2

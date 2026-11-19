@@ -17,6 +17,8 @@
 name: Check License Header Presence
 kind: pipeline
 type: docker
+node:
+  performance: low
 clone:
   depth: 1
 volumes:
@@ -41,6 +43,8 @@ steps:
 name: validate
 kind: pipeline
 type: docker
+node:
+  performance: low
 
 clone:
   depth: 1
@@ -115,6 +119,8 @@ volumes:
 name: E2E Tests Gatekeeper Kubernetes v1.33.2
 kind: pipeline
 type: docker
+node:
+  performance: low
 
 depends_on:
   - validate
@@ -223,6 +229,8 @@ volumes:
 name: E2E Tests Kyverno Kubernetes v1.33.2
 kind: pipeline
 type: docker
+node:
+  performance: low
 
 depends_on:
   - validate
@@ -331,6 +339,8 @@ volumes:
 name: E2E Tests Gatekeeper Kubernetes v1.34.0
 kind: pipeline
 type: docker
+node:
+  performance: low
 
 depends_on:
   - validate
@@ -439,6 +449,8 @@ volumes:
 name: E2E Tests Kyverno Kubernetes v1.34.0
 kind: pipeline
 type: docker
+node:
+  performance: low
 
 depends_on:
   - validate
@@ -547,6 +559,8 @@ volumes:
 name: E2E Tests Gatekeeper Kubernetes v1.35.0
 kind: pipeline
 type: docker
+node:
+  performance: low
 
 depends_on:
   - validate
@@ -655,6 +669,8 @@ volumes:
 name: E2E Tests Kyverno Kubernetes v1.35.0
 kind: pipeline
 type: docker
+node:
+  performance: low
 
 depends_on:
   - validate
@@ -763,6 +779,8 @@ volumes:
 name: E2E Tests Gatekeeper Kubernetes v1.36.4
 kind: pipeline
 type: docker
+node:
+  performance: low
 
 depends_on:
   - validate
@@ -871,6 +889,8 @@ volumes:
 name: E2E Tests Kyverno Kubernetes v1.36.4
 kind: pipeline
 type: docker
+node:
+  performance: low
 
 depends_on:
   - validate
@@ -979,6 +999,8 @@ volumes:
 name: release
 kind: pipeline
 type: docker
+node:
+  performance: low
 
 clone:
   depth: 1
